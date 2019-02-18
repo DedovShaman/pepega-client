@@ -1,19 +1,19 @@
 import * as Settings from '../../components/Settings';
-import Integration from '../../components/Settings/Integration';
+import Streams from '../../components/Settings/Streams';
 import { Permission } from '../../helpers/Permission';
 import Layout from '../../layouts/Main';
 
-const SettingsIntegrationsPage = () => (
+const SettingsAdStreamsPage = () => (
   <Layout>
     <Settings.Box>
-      <Permission name="USER_SETTINGS_INTEGRATION">
-        <Settings.Title>Интеграции</Settings.Title>
+      <Permission name="USER_SETTINGS_ADSTREAMS">
+        <Settings.Title>Продвижение</Settings.Title>
         <Settings.Content>
-          <Integration />
+          <Streams />
         </Settings.Content>
       </Permission>
     </Settings.Box>
   </Layout>
 );
 
-export default SettingsIntegrationsPage;
+export default SettingsAdStreamsPage;

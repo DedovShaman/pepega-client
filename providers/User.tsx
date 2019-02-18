@@ -3,52 +3,40 @@ import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
 const GET_USER = gql`
-  query getUser($id: ID) {
-    user(id: $id) {
+  query getUser($where: UserWhereUniqueInput!) {
+    user(where: $where) {
       id
-      points
-      balance
-      mainProfile {
+      name
+      avatar
+      banned
+      wallets(orderBy: currency_ASC) {
         id
-        name
-        avatar
-      }
-      profiles {
-        id
-        name
-        avatar
-        visible
       }
     }
   }
 `;
 
-const USER_PROFILE_VISIBLE_CHANGED = gql`
-  subscription userProfileVisibleChanged {
-    userProfileVisibleChanged {
-      id
-      visible
+const USER_UPDATED = gql`
+  subscription userUpdated($where: UserSubscriptionWhereInput) {
+    user(where: $where) {
+      node {
+        name
+        avatar
+        banned
+      }
     }
-  }
-`;
-
-const USER_POINTS_CHANGED = gql`
-  subscription userPointsChanged {
-    userPointsChanged
   }
 `;
 
 interface IPropsInner {
   user: any;
-  userProfileVisibleChanged: () => void;
-  userPointsChanged: () => void;
+  userUpdated: () => void;
   children: any;
 }
 
 class UserProviderInner extends Component<IPropsInner> {
   public componentDidMount() {
-    this.props.userProfileVisibleChanged();
-    this.props.userPointsChanged();
+    this.props.userUpdated();
   }
 
   public render() {
@@ -62,67 +50,37 @@ interface IProps {
   id?: string;
 }
 
-const UserProvider: FC<IProps> = ({ children, id }) => (
-  <Query query={GET_USER} variables={{ id }}>
+const UserProvider: FC<IProps> = ({ children, id = '' }) => (
+  <Query query={GET_USER} variables={{ where: { id } }}>
     {({ loading, error, data, subscribeToMore }) => {
-      if (loading) {
+      if (loading || error) {
         return null;
       }
 
-      if (error) {
-        return null;
-      }
+      const subWhere: any = { node: { id } };
 
       return (
         <UserProviderInner
           user={data.user}
-          userProfileVisibleChanged={() =>
+          userUpdated={() => {
             subscribeToMore({
-              document: USER_PROFILE_VISIBLE_CHANGED,
+              document: USER_UPDATED,
+              variables: { where: subWhere },
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) {
                   return prev;
                 }
-
-                const profileVisibleData =
-                  subscriptionData.data.userProfileVisibleChanged;
 
                 return {
                   ...prev,
                   user: {
                     ...prev.user,
-                    profiles: prev.user.profiles.map(profile => {
-                      if (profile.id === profileVisibleData.id) {
-                        return {
-                          ...profile,
-                          visible: profileVisibleData.visible
-                        };
-                      }
-
-                      return profile;
-                    })
+                    ...subscriptionData.data.user.node
                   }
                 };
               }
-            })
-          }
-          userPointsChanged={() =>
-            subscribeToMore({
-              document: USER_POINTS_CHANGED,
-              updateQuery: (prev, { subscriptionData }) => {
-                if (!subscriptionData.data) {
-                  return prev;
-                }
-
-                const newCount = subscriptionData.data.userPointsChanged;
-
-                return {
-                  ...prev,
-                  user: { ...prev.user, points: newCount }
-                };
-              }
-            })
-          }
+            });
+          }}
         >
           {children}
         </UserProviderInner>

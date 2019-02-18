@@ -1,7 +1,7 @@
 import { lighten } from 'polished';
 import { FC } from 'react';
 import styled from 'styled-components';
-import Auth from '../components/Auth';
+import { NewClip } from '../components/Clips/NewClip';
 import Layout from '../layouts/Main';
 
 const Box = styled.div`
@@ -31,19 +31,21 @@ const Title = styled.div`
   background: ${({ theme }) => theme.main1Color};
 `;
 
-const AuthBox = styled.div``;
+const NewClipForm = styled.div`
+  padding: 20px;
+`;
 
-const AuthPage: FC = () => (
+const NewClipPage: FC = () => (
   <Layout>
     <Box>
       <Container>
-        <Title>Авторизация</Title>
-        <AuthBox>
-          <Auth />
-        </AuthBox>
+        <Title>Новый клип</Title>
+        <NewClipForm>
+          <NewClip />
+        </NewClipForm>
       </Container>
     </Box>
   </Layout>
 );
 
-export default AuthPage;
+export default NewClipPage;

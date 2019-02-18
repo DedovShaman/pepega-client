@@ -3,11 +3,10 @@ import ruLocale from 'date-fns/locale/ru';
 import { darken, lighten } from 'polished';
 import { FC } from 'react';
 import styled from 'styled-components';
+import { IClip } from '../../interfaces/Clip';
 import { Icon } from '../../ui/Icon';
 import { VideoPreview } from '../../ui/VideoPreview';
 import { shortNumbers } from '../../utils/count';
-import AuthorGrid from './AuthorGrid';
-import { IPost } from './interfaces/Post';
 
 const Box = styled.div`
   display: flex;
@@ -82,15 +81,15 @@ const Date = styled.div`
 `;
 
 interface IProps {
-  post: IPost;
+  clip: IClip;
   onPlay: () => void;
 }
 
-export const GridView: FC<IProps> = ({ post, onPlay }) => {
+export const ClipGridView: FC<IProps> = ({ clip, onPlay }) => {
   const date =
-    post &&
-    post.createdAt &&
-    distanceInWordsToNow(parseInt(post.createdAt, 10), {
+    clip &&
+    clip.createdAt &&
+    distanceInWordsToNow(clip.createdAt, {
       locale: ruLocale
     }) + ' назад';
 
@@ -98,12 +97,12 @@ export const GridView: FC<IProps> = ({ post, onPlay }) => {
     <Box>
       <Preview>
         <PreviewContent>
-          {post && (
+          {clip && (
             <VideoPreview
               onClick={() => onPlay()}
-              nsfw={post.nfws}
-              spoiler={post.spoiler}
-              cover={post.cover}
+              nsfw={clip.nfws}
+              spoiler={clip.spoiler}
+              cover={clip.cover}
               date={date}
             />
           )}
@@ -111,35 +110,30 @@ export const GridView: FC<IProps> = ({ post, onPlay }) => {
       </Preview>
       <Bottom>
         <BottomLeft>
-          <Title>{post && post.title}</Title>
+          <Title>{clip && clip.title}</Title>
           <Author>
-            {post &&
-              (post.channelName ? (
-                <a
-                  href={`https://www.twitch.tv/${post.channelName}`}
-                  target="_blank"
-                >
-                  {post.channelName}
-                </a>
-              ) : (
-                <AuthorGrid id={post.authorId} />
-              ))}
+            {clip && clip.channel && (
+              <a
+                href={`https://www.twitch.tv/${clip.channel.name}`}
+                target="_blank"
+              >
+                {clip.channel.name}
+              </a>
+            )}
           </Author>
           <Date />
         </BottomLeft>
         <BottomRight>
-          <Rating>
+          {/* <Rating>
             <IconBox>
               <Icon
-                type={post && post.rating < 0 ? 'thumb-down' : 'thumb-up'}
+                type={clip && clip.rating < 0 ? 'thumb-down' : 'thumb-up'}
               />
             </IconBox>
-            {shortNumbers(post ? post.rating : 0)}
-          </Rating>
+            {shortNumbers(clip ? clip.rating : 0)}
+          </Rating> */}
         </BottomRight>
       </Bottom>
     </Box>
   );
 };
-
-export default GridView;

@@ -1,18 +1,16 @@
-import { inject, observer } from 'mobx-react';
-import { RouterProps, withRouter } from 'next/router';
 import { lighten, rgba } from 'polished';
-import { Component, ReactNode } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import Scrollbars from 'react-custom-scrollbars';
 import { YMInitializer } from 'react-yandex-metrika';
 import styled from 'styled-components';
 
+import { ClipView } from '../components/Clips/ClipView';
 import TopNav from '../components/Nav/Top';
-import PostView from '../components/PostHelper/View';
-import { Access } from '../helpers/Access';
-import { IStore } from '../lib/store';
+import { Permission } from '../helpers/Permission';
+import useRouter from '../hooks/useRouter';
 import CategoriesProvider from '../providers/Categories';
+import ClipProvider from '../providers/Clip';
 import FollowsProvider from '../providers/Follows';
-import PostProvider from '../providers/Post';
 import { Icon } from '../ui/Icon';
 import * as LeftMenu from '../ui/LeftMenu';
 import { Modal } from '../ui/Modal';
@@ -90,193 +88,166 @@ const Overlay = styled.div<{ leftMenuIsOpen: boolean }>`
 `;
 
 interface IProps {
-  store?: IStore;
-  router: RouterProps;
   fixedTopContent?: ReactNode;
 }
 
-interface IState {
-  leftMenuIsOpen: boolean;
-}
+const MainLayout: FC<IProps> = ({ children, fixedTopContent }) => {
+  const router = useRouter();
+  const [leftMenuIsOpen, setLeftMenuIsOpen] = useState(false);
 
-@inject('store')
-@observer
-class MainLayout extends Component<IProps, IState> {
-  constructor(props) {
-    super(props);
+  let clipId = null;
 
-    this.state = {
-      leftMenuIsOpen: false
-    };
+  if (typeof router.query.clipId === 'string') {
+    clipId = router.query.clipId;
   }
 
-  public render() {
-    const { children, store, router, fixedTopContent } = this.props;
+  let backPath = null;
 
-    let postId = null;
+  if (typeof router.query.backPath === 'string') {
+    backPath = router.query.backPath;
+  }
 
-    if (typeof router.query.postId === 'string') {
-      postId = router.query.postId;
-    }
+  return (
+    <Box>
+      <Modal
+        visible={!!clipId}
+        minimal
+        onClose={() => router.replace(backPath)}
+      >
+        <div style={{ width: '1000px' }}>
+          <ClipProvider where={{ id: clipId }}>
+            {({ clip }) => <ClipView {...clip} autoPlay />}
+          </ClipProvider>
+        </div>
+      </Modal>
 
-    let backPath = null;
-
-    if (typeof router.query.backPath === 'string') {
-      backPath = router.query.backPath;
-    }
-
-    return (
-      <Box>
-        <Modal
-          visible={!!postId}
-          minimal
-          onClose={() => router.replace(backPath)}
-        >
-          <div style={{ width: '1000px' }}>
-            <PostProvider id={postId}>
-              {({ post }) => <PostView {...post} />}
-            </PostProvider>
-          </div>
-        </Modal>
-
-        <ContentBox>
-          <TopNav
-            leftMenuTrigger={() =>
-              this.setState({ leftMenuIsOpen: !this.state.leftMenuIsOpen })
-            }
-          />
-          <Content>
-            <ContentInsideBox>
-              <Left isOpen={this.state.leftMenuIsOpen}>
-                <Scrollbars autoHide universal>
-                  <LeftMenu.Box>
+      <ContentBox>
+        <TopNav leftMenuTrigger={() => setLeftMenuIsOpen(!leftMenuIsOpen)} />
+        <Content>
+          <ContentInsideBox>
+            <Left isOpen={leftMenuIsOpen}>
+              <Scrollbars autoHide universal>
+                <LeftMenu.Box>
+                  <LeftMenu.Item route="/" equal icon="home" title="Главная" />
+                  <LeftMenu.Item
+                    equal
+                    route="/hot"
+                    icon="fire"
+                    title="В тренде"
+                  />
+                  <LeftMenu.Item
+                    equal
+                    route="/new"
+                    icon="flare"
+                    title="Новое"
+                  />
+                  <LeftMenu.Item route="/top" icon="trending-up" title="Топ">
+                    <LeftMenu.SubItem route="/top/day">День</LeftMenu.SubItem>
+                    <LeftMenu.SubItem route="/top/week">
+                      Неделя
+                    </LeftMenu.SubItem>
+                    <LeftMenu.SubItem route="/top/month">
+                      Месяц
+                    </LeftMenu.SubItem>
+                    <LeftMenu.SubItem route="/top/all">
+                      Все время
+                    </LeftMenu.SubItem>
+                  </LeftMenu.Item>
+                  <LeftMenu.Item
+                    route="/categories"
+                    icon="apps"
+                    title="Категории"
+                  >
+                    <CategoriesProvider>
+                      {({ categories }) =>
+                        categories.map(({ game }) => (
+                          <LeftMenu.SubItem
+                            route={`/categories?game=${game.name}`}
+                            active={router.query.game === game.name}
+                            key={game._id}
+                          >
+                            {game.name}
+                          </LeftMenu.SubItem>
+                        ))
+                      }
+                    </CategoriesProvider>
+                  </LeftMenu.Item>
+                  <Permission name="GET_LIKES">
                     <LeftMenu.Item
-                      route="/"
-                      equal
-                      icon="home"
-                      title="Главная"
+                      route="/likes"
+                      icon="thumb-up"
+                      title="Понравившиеся"
                     />
+                  </Permission>
+                  <Permission name="GET_FOLLOWS">
                     <LeftMenu.Item
-                      equal
-                      route="/hot"
-                      icon="fire"
-                      title="В тренде"
-                    />
-                    <LeftMenu.Item
-                      equal
-                      route="/new"
-                      icon="flare"
-                      title="Новое"
-                    />
-                    <LeftMenu.Item route="/top" icon="trending-up" title="Топ">
-                      <LeftMenu.SubItem route="/top/day">День</LeftMenu.SubItem>
-                      <LeftMenu.SubItem route="/top/week">
-                        Неделя
-                      </LeftMenu.SubItem>
-                      <LeftMenu.SubItem route="/top/month">
-                        Месяц
-                      </LeftMenu.SubItem>
-                      <LeftMenu.SubItem route="/top/all">
-                        Все время
-                      </LeftMenu.SubItem>
-                    </LeftMenu.Item>
-                    <LeftMenu.Item
-                      route="/categories"
-                      icon="apps"
-                      title="Категории"
+                      route="/follows"
+                      icon="favorite"
+                      title="Подписки"
                     >
-                      <CategoriesProvider>
-                        {({ categories }) =>
-                          categories.map(({ game }) => (
-                            <LeftMenu.SubItem
-                              route={`/categories?game=${game.name}`}
-                              active={router.query.game === game.name}
-                              key={game._id}
-                            >
-                              {game.name}
-                            </LeftMenu.SubItem>
-                          ))
-                        }
-                      </CategoriesProvider>
+                      <FollowsProvider>
+                        {({ follows, moreFollows, hasMore }) => (
+                          <>
+                            {follows.map(channel => (
+                              <LeftMenu.SubItem
+                                route={`/follows?channel=${channel.name}`}
+                                active={router.query.channel === channel.name}
+                                key={channel.name}
+                              >
+                                {channel.title}
+                              </LeftMenu.SubItem>
+                            ))}
+                            {hasMore && (
+                              <LeftMenu.LoadMore onClick={() => moreFollows()}>
+                                <Icon type="chevron-down" />
+                              </LeftMenu.LoadMore>
+                            )}
+                          </>
+                        )}
+                      </FollowsProvider>
                     </LeftMenu.Item>
-                    <Access>
-                      <LeftMenu.Item
-                        route="/likes"
-                        icon="thumb-up"
-                        title="Понравившиеся"
-                      />
-                      <LeftMenu.Item
-                        route="/follows"
-                        icon="favorite"
-                        title="Подписки"
-                      >
-                        <FollowsProvider>
-                          {({ follows, moreFollows, hasMore }) => (
-                            <>
-                              {follows.map(channel => (
-                                <LeftMenu.SubItem
-                                  route={`/follows?channel=${channel.name}`}
-                                  active={router.query.channel === channel.name}
-                                  key={channel.name}
-                                >
-                                  {channel.title}
-                                </LeftMenu.SubItem>
-                              ))}
-                              {hasMore && (
-                                <LeftMenu.LoadMore
-                                  onClick={() => moreFollows()}
-                                >
-                                  <Icon type="chevron-down" />
-                                </LeftMenu.LoadMore>
-                              )}
-                            </>
-                          )}
-                        </FollowsProvider>
-                      </LeftMenu.Item>
-                      {/* <LeftMenu.Item
-                        route="/settings"
-                        icon="settings"
-                        title="Настройки"
-                      >
-                        <LeftMenu.SubItem route={`/settings`}>
-                          Учетная запись
-                        </LeftMenu.SubItem>
-                        <LeftMenu.SubItem route={`/settings/appearance`}>
-                          Внешний вид
-                        </LeftMenu.SubItem>
-                        <LeftMenu.SubItem route={`/settings/integrations`}>
-                          Интеграции
-                        </LeftMenu.SubItem>
-                      </LeftMenu.Item> */}
-                    </Access>
-                  </LeftMenu.Box>
-                </Scrollbars>
-              </Left>
-              <PostsBox id="layoutContent">
-                {fixedTopContent}
-                <Scrollbars
-                  autoHide
-                  universal
-                  onScrollFrame={e => {
-                    const offset =
-                      e.scrollHeight - e.scrollTop - e.clientHeight;
-                    store.setLayoutInLoadArea(offset <= 250);
-                  }}
-                >
-                  {children}
-                </Scrollbars>
-              </PostsBox>
-            </ContentInsideBox>
-            <Overlay
-              leftMenuIsOpen={this.state.leftMenuIsOpen}
-              onClick={() => this.setState({ leftMenuIsOpen: false })}
-            />
-          </Content>
-        </ContentBox>
-        <YMInitializer accounts={[51879323]} version="2" />
-      </Box>
-    );
-  }
-}
+                    <LeftMenu.Item
+                      route="/settings"
+                      icon="settings"
+                      title="Настройки"
+                    >
+                      <LeftMenu.SubItem route={`/settings/adstreams`}>
+                        Продвижение
+                      </LeftMenu.SubItem>
+                      {/* <LeftMenu.SubItem route={`/settings/appearance`}>
+                        Внешний вид
+                      </LeftMenu.SubItem> */}
+                      <LeftMenu.SubItem route={`/settings/integrations`}>
+                        Интеграции
+                      </LeftMenu.SubItem>
+                    </LeftMenu.Item>
+                  </Permission>
+                </LeftMenu.Box>
+              </Scrollbars>
+            </Left>
+            <PostsBox id="layoutContent">
+              {fixedTopContent}
+              <Scrollbars
+                autoHide
+                universal
+                onScrollFrame={e => {
+                  const offset = e.scrollHeight - e.scrollTop - e.clientHeight;
+                  // store.setLayoutInLoadArea(offset <= 250);
+                }}
+              >
+                {children}
+              </Scrollbars>
+            </PostsBox>
+          </ContentInsideBox>
+          <Overlay
+            leftMenuIsOpen={leftMenuIsOpen}
+            onClick={() => setLeftMenuIsOpen(false)}
+          />
+        </Content>
+      </ContentBox>
+      <YMInitializer accounts={[51879323]} version="2" />
+    </Box>
+  );
+};
 
-export default withRouter(MainLayout);
+export default MainLayout;

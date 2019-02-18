@@ -1,11 +1,9 @@
-import { inject, observer } from 'mobx-react';
 import { lighten, rgba } from 'polished';
 import { Component, ReactNode } from 'react';
 import Scrollbars from 'react-custom-scrollbars';
 import styled from 'styled-components';
 import TopNav from '../components/Nav/Top';
-import { Access } from '../helpers/Access';
-import { IStore } from '../lib/store';
+import { Permission } from '../helpers/Permission';
 import * as LeftMenu from '../ui/LeftMenu';
 
 const LEFT_MENU_WIDTH = 260;
@@ -81,7 +79,6 @@ const Overlay = styled.div<{ leftMenuIsOpen: boolean }>`
 `;
 
 interface IProps {
-  store?: IStore;
   fixedTopContent?: ReactNode;
 }
 
@@ -89,8 +86,6 @@ interface IState {
   leftMenuIsOpen: boolean;
 }
 
-@inject('store')
-@observer
 class ManageLayout extends Component<IProps, IState> {
   constructor(props) {
     super(props);
@@ -101,10 +96,10 @@ class ManageLayout extends Component<IProps, IState> {
   }
 
   public render() {
-    const { children, store } = this.props;
+    const { children } = this.props;
 
     return (
-      <Access allow={currentUser => currentUser.role === 'admin'}>
+      <Permission name="MANAGE">
         <Box>
           <ContentBox>
             <TopNav
@@ -142,15 +137,7 @@ class ManageLayout extends Component<IProps, IState> {
                   </Scrollbars>
                 </Left>
                 <PostsBox id="layoutContent">
-                  <Scrollbars
-                    autoHide
-                    universal
-                    onScrollFrame={e => {
-                      const offset =
-                        e.scrollHeight - e.scrollTop - e.clientHeight;
-                      store.setLayoutInLoadArea(offset <= 250);
-                    }}
-                  >
+                  <Scrollbars autoHide universal>
                     {children}
                   </Scrollbars>
                 </PostsBox>
@@ -162,7 +149,7 @@ class ManageLayout extends Component<IProps, IState> {
             </Content>
           </ContentBox>
         </Box>
-      </Access>
+      </Permission>
     );
   }
 }

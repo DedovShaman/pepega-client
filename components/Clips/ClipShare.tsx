@@ -1,5 +1,5 @@
 import { darken } from 'polished';
-import * as React from 'react';
+import { FC } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   TwitterIcon,
@@ -7,7 +7,6 @@ import {
   VKIcon,
   VKShareButton
 } from 'react-share';
-
 import styled from 'styled-components';
 import { Dropdown } from '../../ui/Dropdown';
 import { Icon } from '../../ui/Icon';
@@ -61,42 +60,36 @@ interface IProps {
   id: string;
 }
 
-export default class extends React.Component<IProps> {
-  public renderMenu = (id: string) => {
-    const url = `https://twitchru.com/post?id=${id}`;
+export const ClipShare: FC<IProps> = ({ id }) => {
+  const url = `https://twitchru.com/post?id=${id}`;
 
-    return (
-      <ShareMenu>
-        <ShareMenuItem>
-          <VKShareButton url={url}>
-            <VKIcon size={32} />
-          </VKShareButton>
-        </ShareMenuItem>
-        <ShareMenuItem>
-          <TwitterShareButton url={url}>
-            <TwitterIcon size={32} />
-          </TwitterShareButton>
-        </ShareMenuItem>
-        <ShareMenuItem>
-          <CopyToClipboard text={url}>
-            <CopyLinkButton>
-              <Icon type="copy" />
-            </CopyLinkButton>
-          </CopyToClipboard>
-        </ShareMenuItem>
-      </ShareMenu>
-    );
-  };
-
-  public render() {
-    const { id } = this.props;
-
-    return (
-      <Dropdown overlay={this.renderMenu(id)}>
-        <ShareButton>
-          <Icon type="mail-reply" />
-        </ShareButton>
-      </Dropdown>
-    );
-  }
-}
+  return (
+    <Dropdown
+      overlay={
+        <ShareMenu>
+          <ShareMenuItem>
+            <VKShareButton url={url}>
+              <VKIcon size={32} />
+            </VKShareButton>
+          </ShareMenuItem>
+          <ShareMenuItem>
+            <TwitterShareButton url={url}>
+              <TwitterIcon size={32} />
+            </TwitterShareButton>
+          </ShareMenuItem>
+          <ShareMenuItem>
+            <CopyToClipboard text={url}>
+              <CopyLinkButton>
+                <Icon type="copy" />
+              </CopyLinkButton>
+            </CopyToClipboard>
+          </ShareMenuItem>
+        </ShareMenu>
+      }
+    >
+      <ShareButton>
+        <Icon type="mail-reply" />
+      </ShareButton>
+    </Dropdown>
+  );
+};

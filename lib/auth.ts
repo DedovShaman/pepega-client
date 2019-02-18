@@ -93,8 +93,8 @@ export const accessTokenIsValid = token => {
 };
 
 const REFRESH_QUERY = `
-  query($refreshToken: String!) {
-    refresh(refreshToken: $refreshToken) {
+  mutation refreshTokens($refreshToken: String!) {
+    refreshTokens(refreshToken: $refreshToken) {
       refreshToken
       accessToken
     }
@@ -130,7 +130,7 @@ const refreshQuery = async refreshToken => {
 
   // console.log('end refreshQuery', qId, refreshToken);
 
-  return query.data.refresh;
+  return query.data.refreshTokens;
 };
 
 class TokenRefresh {

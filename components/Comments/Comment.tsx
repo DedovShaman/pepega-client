@@ -4,7 +4,7 @@ import { darken, lighten } from 'polished';
 import * as React from 'react';
 import { Mutation, Query } from 'react-apollo';
 import styled from 'styled-components';
-import { Access } from '../../helpers/Access';
+import { Permission } from '../../helpers/Permission';
 import { Dropdown } from '../../ui/Dropdown';
 import { Emoji } from '../../ui/Emoji';
 import { splitTextToEmojiArray } from '../../utils/emoji';
@@ -23,18 +23,6 @@ const GET_USER = gql`
         serviceName
       }
     }
-  }
-`;
-
-const SET_USER_ROLE_MOD = gql`
-  mutation setUserRoleMod($id: ID!) {
-    setUserRoleMod(id: $id)
-  }
-`;
-
-const UNSET_USER_ROLE_MOD = gql`
-  mutation unsetUserRoleMod($id: ID!) {
-    unsetUserRoleMod(id: $id)
   }
 `;
 
@@ -210,27 +198,7 @@ export default class extends React.Component<IProps, {}> {
           <UserMenuItem>Профиль</UserMenuItem>
         </Link>
 
-        <Access
-          name="setUserBan"
-          allow={currentUser => {
-            if (user.banned) {
-              return false;
-            }
-
-            if (currentUser.role !== 'admin' && currentUser.role !== 'mod') {
-              return false;
-            }
-
-            if (
-              user.role === 'admin' ||
-              (user.role === 'mod' && currentUser.role !== 'admin')
-            ) {
-              return false;
-            }
-
-            return true;
-          }}
-        >
+        <Permission name="SET_USER_BAN" contextId={user.id}>
           <Mutation mutation={SET_USER_BAN}>
             {setUserBan => (
               <UserMenuItem
@@ -246,21 +214,9 @@ export default class extends React.Component<IProps, {}> {
               </UserMenuItem>
             )}
           </Mutation>
-        </Access>
+        </Permission>
 
-        <Access
-          allow={currentUser => {
-            if (!user.banned) {
-              return false;
-            }
-
-            if (currentUser.role !== 'admin' && currentUser.role !== 'mod') {
-              return false;
-            }
-
-            return currentUser.role === 'admin' && user.role === 'user';
-          }}
-        >
+        <Permission name="UNSET_USER_BAN" contextId={user.id}>
           <Mutation mutation={UNSET_USER_BAN}>
             {unsetUserBan => (
               <UserMenuItem
@@ -276,51 +232,7 @@ export default class extends React.Component<IProps, {}> {
               </UserMenuItem>
             )}
           </Mutation>
-        </Access>
-
-        <Access
-          allow={currentUser =>
-            currentUser.role === 'admin' && user.role === 'user'
-          }
-        >
-          <Mutation mutation={SET_USER_ROLE_MOD}>
-            {setUserRoleMod => (
-              <UserMenuItem
-                onClick={() =>
-                  setUserRoleMod({
-                    variables: {
-                      id: user.id
-                    }
-                  })
-                }
-              >
-                Назначить модератором
-              </UserMenuItem>
-            )}
-          </Mutation>
-        </Access>
-
-        <Access
-          allow={currentUser =>
-            currentUser.role === 'admin' && user.role === 'mod'
-          }
-        >
-          <Mutation mutation={UNSET_USER_ROLE_MOD}>
-            {unsetUserRoleMod => (
-              <UserMenuItem
-                onClick={() =>
-                  unsetUserRoleMod({
-                    variables: {
-                      id: user.id
-                    }
-                  })
-                }
-              >
-                Разжаловать модератора
-              </UserMenuItem>
-            )}
-          </Mutation>
-        </Access>
+        </Permission>
       </UserMenu>
     );
   }
@@ -356,15 +268,8 @@ export default class extends React.Component<IProps, {}> {
         )}
         <Content>
           <Text>{this.renderContent()}</Text>
-          {/* <Access name="manageMessage"> */}
           <ManageMenu>
-            <Access
-              allow={currentUser => {
-                return (
-                  currentUser.role === 'mod' || currentUser.role === 'admin'
-                );
-              }}
-            >
+            <Permission name="DELETE_MESSAGE" contextId={this.props.id}>
               <Mutation mutation={REMOVE_MESSAGE}>
                 {removeMessage => (
                   <ManageItem
@@ -380,9 +285,8 @@ export default class extends React.Component<IProps, {}> {
                   </ManageItem>
                 )}
               </Mutation>
-            </Access>
+            </Permission>
           </ManageMenu>
-          {/* </Access> */}
         </Content>
       </Message>
     );

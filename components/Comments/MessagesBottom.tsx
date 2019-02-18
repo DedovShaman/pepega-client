@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import * as React from 'react';
 import { Mutation } from 'react-apollo';
 import styled from 'styled-components';
-import { Access } from '../../helpers/Access';
+import { Permission } from '../../helpers/Permission';
 import { convertTextToEmojiCode } from '../../utils/emoji';
 
 const CREATE_COMMENT = gql`
@@ -43,50 +43,60 @@ export default class extends React.Component<IProps> {
 
     return (
       <MessagesBottom>
-        <Access
-          denyContent={
-            <input
-              disabled
-              type="text"
-              placeholder="Войдите чтобы писать комментарии"
-            />
-          }
-        >
-          <Mutation
-            mutation={CREATE_COMMENT}
-            onCompleted={({ createComment }) => {
-              if (createComment) {
-                this.textInput.value = '';
-                this.lock = false;
-              }
-            }}
-          >
-            {createComment => (
-              <>
+        <Permission name="CREATE_COMMENT">
+          {({ deny }) => {
+            if (deny) {
+              return (
                 <input
-                  ref={input => {
-                    this.textInput = input;
-                  }}
-                  maxLength={500}
+                  disabled
                   type="text"
-                  placeholder="Написать комментарий..."
-                  onKeyPress={e => {
-                    const text = convertTextToEmojiCode(
-                      this.textInput.value.trim()
-                    );
-
-                    if (e.key === 'Enter' && !this.lock && text.length > 0) {
-                      this.lock = true;
-                      createComment({
-                        variables: { postId, text }
-                      });
-                    }
-                  }}
+                  placeholder="Войдите чтобы писать комментарии"
                 />
-              </>
-            )}
-          </Mutation>
-        </Access>
+              );
+            }
+
+            return (
+              <Mutation
+                mutation={CREATE_COMMENT}
+                onCompleted={({ createComment }) => {
+                  if (createComment) {
+                    this.textInput.value = '';
+                    this.lock = false;
+                  }
+                }}
+              >
+                {createComment => (
+                  <>
+                    <input
+                      ref={input => {
+                        this.textInput = input;
+                      }}
+                      maxLength={500}
+                      type="text"
+                      placeholder="Написать комментарий..."
+                      onKeyPress={e => {
+                        const text = convertTextToEmojiCode(
+                          this.textInput.value.trim()
+                        );
+
+                        if (
+                          e.key === 'Enter' &&
+                          !this.lock &&
+                          text.length > 0
+                        ) {
+                          this.lock = true;
+                          createComment({
+                            variables: { postId, text }
+                          });
+                        }
+                      }}
+                    />
+                  </>
+                )}
+              </Mutation>
+            );
+          }}
+        </Permission>
       </MessagesBottom>
     );
   }

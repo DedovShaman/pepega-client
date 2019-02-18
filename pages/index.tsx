@@ -1,13 +1,23 @@
-import Posts from '../components/Posts';
+import { Clips } from '../components/Clips/Clips';
 import Streams from '../components/Streams/Grid';
 import Layout from '../layouts/Main';
 
 const IndexPage = () => (
   <Layout>
-    <Streams />
-    <Posts title="Топ за день" titleLink="/top/day" sort="topDay" rows={1} />
-    <Posts title="В тренде" titleLink="/hot" sort="hot" rows={1} />
-    <Posts title="Новое" titleLink="/new" sort="new" />
+    {/* {/* <Streams /> */}
+    <Clips
+      title="Топ за день"
+      titleLink="/top/day"
+      orderBy="createdAt_DESC"
+      rows={1}
+    />
+    <Clips
+      title="В тренде"
+      titleLink="/hot"
+      orderBy="createdAt_DESC"
+      rows={1}
+    />
+    <Clips title="Новое" titleLink="/new" orderBy="createdAt_DESC" />
   </Layout>
 );
 

@@ -1,18 +1,36 @@
-import { inject, observer } from 'mobx-react';
+import gql from 'graphql-tag';
 import Link from 'next/link';
-import { withRouter } from 'next/router';
 import { darken, lighten } from 'polished';
-import { Component } from 'react';
+import { FC } from 'react';
+import { Query } from 'react-apollo';
 import styled from 'styled-components';
-import { IStore } from '../../../lib/store';
+import useRouter from '../../../hooks/useRouter';
 import UserProvider from '../../../providers/User';
+import WalletProvider from '../../../providers/Wallet';
 import { Avatar } from '../../../ui/Avatar';
 import { Icon } from '../../../ui/Icon';
 import { Modal } from '../../../ui/Modal';
 import { humanNumbers } from '../../../utils/count';
 import Auth from '../../Auth';
-import CreatePost from '../../CreatePost';
+import { NewClip } from '../../Clips/NewClip';
 import Menu from './Menu';
+
+const GET_WALLETS = gql`
+  query getWallets {
+    coinWallets: wallets(
+      where: { currency: COIN, user: { id: "" } }
+      first: 1
+    ) {
+      id
+    }
+    realWallets: wallets(
+      where: { currency: REAL, user: { id: "" } }
+      first: 1
+    ) {
+      id
+    }
+  }
+`;
 
 const Box = styled.div`
   height: 50px;
@@ -152,11 +170,11 @@ const PointsIcon = styled.div`
   justify-content: center;
 `;
 
-const PointsIconGold = styled(PointsIcon)`
+const PointsIconCoin = styled(PointsIcon)`
   border-color: #a48b3f;
 `;
 
-const PointsIconPepega = styled(PointsIcon)`
+const PointsIconReal = styled(PointsIcon)`
   border-color: #3fa447;
 `;
 
@@ -186,138 +204,155 @@ const UserCaratBox = styled.div`
 `;
 
 interface IProps {
-  store?: IStore;
-  router: any;
   leftMenuTrigger: () => void;
 }
 
-@inject('store')
-@observer
-class TopNav extends Component<IProps> {
-  constructor(props) {
-    super(props);
-  }
+const TopNav: FC<IProps> = ({ leftMenuTrigger }) => {
+  const router = useRouter();
 
-  public render() {
-    return (
-      <Box>
-        <Modal
-          minimal
-          visible={this.props.router.query.authModal === '1'}
-          onClose={() => this.props.router.back()}
-        >
-          <Auth />
-        </Modal>
-        <Modal
-          title="Новый пост"
-          visible={this.props.router.query.newPost === '1'}
-          onClose={() => this.props.router.back()}
-        >
-          <CreatePost />
-        </Modal>
-        <Left>
-          <MenuButton onClick={() => this.props.leftMenuTrigger()}>
-            <Icon type="menu" />
-          </MenuButton>
-          <Link href="/" passHref>
-            <LogoLink>
-              <LogoImg src="https://ravepro.ams3.digitaloceanspaces.com/logo40.svg" />
-            </LogoLink>
-          </Link>
-          <LeftMenu>
-            <Links>
-              <Link href="/" passHref>
-                <TopLink>Клипы</TopLink>
-              </Link>
-              <Link href="/casino" passHref>
-                <TopLink>Рулетка</TopLink>
-              </Link>
-              <TopLink href="https://discord.gg/xVprhFC" target="_blank">
-                Discord
-              </TopLink>
-            </Links>
-          </LeftMenu>
-        </Left>
-        <Right>
-          <UserBox>
-            <UserProvider>
-              {({ user }) =>
-                user ? (
-                  <>
-                    <Links>
-                      <Link
-                        as={`/newPost`}
-                        href={{
-                          pathname: this.props.router.route,
-                          query: {
-                            ...this.props.router.query,
-                            newPost: 1
-                          }
-                        }}
-                        passHref
-                      >
-                        <TopLink>Закинуть клип</TopLink>
-                      </Link>
-                    </Links>
-                    <PointsBox>
-                      <Points>
-                        <PointsIconGold />
-                        <PointsCount>{humanNumbers(user.points)}</PointsCount>
-                      </Points>
-                      <Points>
-                        <PointsIconPepega />
-                        <PointsCount>{humanNumbers(user.balance)}</PointsCount>
-                      </Points>
-                    </PointsBox>
-                    <Menu user={user}>
-                      <UserDataBox>
-                        <UserNameBox>{user.mainProfile.name}</UserNameBox>
-                        <AvatarBox>
-                          <Avatar avatar={user.mainProfile.avatar} />
-                        </AvatarBox>
-                        <UserCaratBox>
-                          <Icon type="caret-down" />
-                        </UserCaratBox>
-                      </UserDataBox>
-                    </Menu>
-                  </>
-                ) : (
+  return (
+    <Box>
+      <Modal
+        minimal
+        visible={router.query.authModal === '1'}
+        onClose={() => router.back()}
+      >
+        <Auth />
+      </Modal>
+      <Modal
+        title="Новый клип"
+        visible={router.query.newClipModal === '1'}
+        onClose={() => router.back()}
+      >
+        <NewClip />
+      </Modal>
+      <Left>
+        <MenuButton onClick={() => leftMenuTrigger()}>
+          <Icon type="menu" />
+        </MenuButton>
+        <Link href="/" passHref>
+          <LogoLink>
+            <LogoImg src="https://ravepro.ams3.digitaloceanspaces.com/logo40.svg" />
+          </LogoLink>
+        </Link>
+        <LeftMenu>
+          <Links>
+            <Link href="/" passHref>
+              <TopLink>Клипы</TopLink>
+            </Link>
+            <TopLink href="https://discord.gg/xVprhFC" target="_blank">
+              Discord
+            </TopLink>
+          </Links>
+        </LeftMenu>
+      </Left>
+      <Right>
+        <UserBox>
+          <UserProvider>
+            {({ user }) =>
+              user ? (
+                <>
                   <Links>
                     <Link
-                      as={`/auth?continue=/newPost`}
+                      as={`/newClip`}
                       href={{
-                        pathname: this.props.router.route,
+                        pathname: router.route,
                         query: {
-                          ...this.props.router.query,
-                          authModal: 1
+                          ...router.query,
+                          newClipModal: 1
                         }
                       }}
                       passHref
                     >
                       <TopLink>Закинуть клип</TopLink>
                     </Link>
-                    <Link
-                      as={`/auth?continue=${this.props.router.asPath}`}
-                      href={{
-                        pathname: this.props.router.route,
-                        query: {
-                          ...this.props.router.query,
-                          authModal: 1
-                        }
-                      }}
-                      passHref
-                    >
-                      <TopLink>Войти</TopLink>
-                    </Link>
                   </Links>
-                )
-              }
-            </UserProvider>
-          </UserBox>
-        </Right>
-      </Box>
-    );
-  }
-}
+                  <PointsBox>
+                    <Query query={GET_WALLETS}>
+                      {({ loading, error, data }) => {
+                        if (loading || error) {
+                          return null;
+                        }
 
-export default withRouter(TopNav);
+                        return (
+                          <>
+                            {data.coinWallets.map(w => (
+                              <WalletProvider key={w.id} where={{ id: w.id }}>
+                                {({ wallet }) => (
+                                  <Points>
+                                    <PointsIconCoin />
+                                    <PointsCount>
+                                      {humanNumbers(wallet.balance)}
+                                    </PointsCount>
+                                  </Points>
+                                )}
+                              </WalletProvider>
+                            ))}
+                            {data.realWallets.map(w => (
+                              <WalletProvider key={w.id} where={{ id: w.id }}>
+                                {({ wallet }) => (
+                                  <Points>
+                                    <PointsIconReal />
+                                    <PointsCount>
+                                      {humanNumbers(wallet.balance)}
+                                    </PointsCount>
+                                  </Points>
+                                )}
+                              </WalletProvider>
+                            ))}
+                          </>
+                        );
+                      }}
+                    </Query>
+                  </PointsBox>
+                  <Menu user={user}>
+                    <UserDataBox>
+                      <UserNameBox>{user.name}</UserNameBox>
+                      <AvatarBox>
+                        <Avatar avatar={user.avatar} />
+                      </AvatarBox>
+                      <UserCaratBox>
+                        <Icon type="caret-down" />
+                      </UserCaratBox>
+                    </UserDataBox>
+                  </Menu>
+                </>
+              ) : (
+                <Links>
+                  <Link
+                    as={`/auth?continue=/newClip`}
+                    href={{
+                      pathname: router.route,
+                      query: {
+                        ...router.query,
+                        authModal: 1
+                      }
+                    }}
+                    passHref
+                  >
+                    <TopLink>Закинуть клип</TopLink>
+                  </Link>
+                  <Link
+                    as={`/auth?continue=${router.asPath}`}
+                    href={{
+                      pathname: router.route,
+                      query: {
+                        ...router.query,
+                        authModal: 1
+                      }
+                    }}
+                    passHref
+                  >
+                    <TopLink>Войти</TopLink>
+                  </Link>
+                </Links>
+              )
+            }
+          </UserProvider>
+        </UserBox>
+      </Right>
+    </Box>
+  );
+};
+
+export default TopNav;

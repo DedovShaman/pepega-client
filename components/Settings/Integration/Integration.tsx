@@ -13,6 +13,12 @@ const SET_PROFILE_VISIBLE = gql`
   }
 `;
 
+const DISCONNECT_PROFILE = gql`
+  mutation disconnectProfile($profileId: ID!) {
+    disconnectProfile(profileId: $profileId)
+  }
+`;
+
 const IntegrationBox = styled.div`
   margin: 20px 0;
   /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); */
@@ -85,12 +91,20 @@ class Integration extends React.Component<IProps> {
           )}
           <IntegrationHeaderActions>
             {isConnect && !denyDisconnect && (
-              <Button
-                mainColor={bgColor}
-                onClick={() => disconnect(serviceName)}
-              >
-                Отключить
-              </Button>
+              <Mutation mutation={DISCONNECT_PROFILE}>
+                {disconnectProfile => (
+                  <Button
+                    mainColor={bgColor}
+                    onClick={() =>
+                      disconnectProfile({
+                        variables: { profileId: profile.id }
+                      })
+                    }
+                  >
+                    Отключить
+                  </Button>
+                )}
+              </Mutation>
             )}
             {!isConnect && (
               <Button mainColor={bgColor} onClick={() => connect(serviceName)}>

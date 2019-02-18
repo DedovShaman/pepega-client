@@ -3,8 +3,8 @@ import { Component } from 'react';
 import { Query } from 'react-apollo';
 
 const GET_USER_TWITCH_FOLLOWS = gql`
-  query userTwitchFollows($limit: Int, $offset: Int) {
-    userTwitchFollows(offset: $offset, limit: $limit) {
+  query twitchFollows($limit: Int, $offset: Int) {
+    twitchFollows(offset: $offset, limit: $limit) {
       count
       follows {
         title
@@ -45,13 +45,13 @@ class Follows extends Component<IProps> {
             return null;
           }
 
-          if (error || !data || !data.userTwitchFollows) {
+          if (error || !data || !data.twitchFollows) {
             return null;
           }
 
           return children({
-            follows: data.userTwitchFollows.follows,
-            hasMore: this.page * this.pageSize <= data.userTwitchFollows.count,
+            follows: data.twitchFollows.follows,
+            hasMore: this.page * this.pageSize <= data.twitchFollows.count,
             moreFollows: () => {
               fetchMore({
                 variables: {
@@ -66,11 +66,11 @@ class Follows extends Component<IProps> {
 
                   return {
                     ...prev,
-                    userTwitchFollows: {
-                      ...prev.userTwitchFollows,
+                    twitchFollows: {
+                      ...prev.twitchFollows,
                       follows: [
-                        ...prev.userTwitchFollows.follows,
-                        ...fetchMoreResult.userTwitchFollows.follows
+                        ...prev.twitchFollows.follows,
+                        ...fetchMoreResult.twitchFollows.follows
                       ]
                     }
                   };

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
-import Posts from '../components/Posts';
+import { Clips } from '../components/Clips/Clips';
 import Streams from '../components/Streams/Grid';
 import Layout from '../layouts/Main';
 
@@ -29,7 +29,7 @@ const LikesPage = () => (
         return (
           <>
             <Streams />
-            <Posts title="Понравившиеся" likedUserId={user.id} />
+            {/* <Posts title="Понравившиеся" likedUserId={user.id} /> */}
           </>
         );
       }}

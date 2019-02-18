@@ -1,7 +1,7 @@
 import { rgba } from 'polished';
-import { FC, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
+import ResizeObserver from 'resize-observer-polyfill';
 import styled from 'styled-components';
-// import useMeasure from '../../hooks/useMeasure';
 import { Icon } from '../Icon';
 
 const PLAY_SIZE = 28;
@@ -139,13 +139,24 @@ export const VideoPreview: FC<IProps> = ({
   date,
   views
 }) => {
-  const box = useRef(null);
-  // const { width } = useMeasure(box)[0];
-  // console.log(width);
-  const width = 270;
+  const [width, setWidth] = useState(0);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      const containerWidth = entry.contentRect.width;
+      setWidth(containerWidth);
+    });
+
+    if (ref.current) {
+      resizeObserver.observe(ref.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, [ref.current]);
 
   return (
-    <Box ref={box}>
+    <Box ref={ref}>
       <ContentBox>
         <PreviewBox onClick={onClick}>
           <PreviewImg url={cover} blur={nsfw || spoiler} />

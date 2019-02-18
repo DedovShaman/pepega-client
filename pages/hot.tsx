@@ -1,11 +1,11 @@
-import Posts from '../components/Posts';
+import { Clips } from '../components/Clips/Clips';
 import Streams from '../components/Streams/Grid';
 import Layout from '../layouts/Main';
 
 const HotPage = () => (
   <Layout>
     <Streams />
-    <Posts title="В тренде" sort={'hot'} />
+    <Clips title="В тренде" />
   </Layout>
 );
 

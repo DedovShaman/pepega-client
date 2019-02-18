@@ -9,13 +9,13 @@ import styled from 'styled-components';
 import useRouter from '../hooks/useRouter';
 import { Grid } from '../ui/Grid';
 import { Modal } from '../ui/Modal';
+import { TwitchClipPlayer } from '../ui/TwitchClipPlayer';
 import { VideoPreview } from '../ui/VideoPreview';
 import { humanNumbers } from '../utils/count';
-import SourceView from './SourceView';
 
 const GET_TWITCH_CHANNEL_TOP_CLIPS = gql`
-  query twitchChannelTopClips($channel: String, $game: String, $limit: Int) {
-    twitchChannelTopClips(channel: $channel, game: $game, limit: $limit) {
+  query twitchTopClips($channel: String, $game: String, $limit: Int) {
+    twitchTopClips(channel: $channel, game: $game, limit: $limit) {
       id
       channel
       title
@@ -102,15 +102,13 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
         }}
       >
         {({ loading, error, data }) => {
-          if (error || !data || !data.twitchChannelTopClips) {
+          if (error || !data || !data.twitchTopClips) {
             return null;
           }
 
-          const curretClipIndex = data.twitchChannelTopClips.findIndex(
-            ({ id }) => {
-              return router.query.clip === id;
-            }
-          );
+          const curretClipIndex = data.twitchTopClips.findIndex(({ id }) => {
+            return router.query.clip === id;
+          });
 
           const openClip = (clipId: string) => {
             router.push(
@@ -132,13 +130,13 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
             );
           };
 
-          const clipsCount = data.twitchChannelTopClips.length;
+          const clipsCount = data.twitchTopClips.length;
 
           const goPrev = () =>
-            openClip(data.twitchChannelTopClips[curretClipIndex - 1].id);
+            openClip(data.twitchTopClips[curretClipIndex - 1].id);
 
           const goNext = () =>
-            openClip(data.twitchChannelTopClips[curretClipIndex + 1].id);
+            openClip(data.twitchTopClips[curretClipIndex + 1].id);
 
           const sourceId = router.query.clip
             ? router.query.clip.toString()
@@ -170,18 +168,12 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
                 }}
               >
                 <div style={{ width: 1100 }}>
-                  <SourceView
-                    playSourceKey={`${router.query.clip}top`}
-                    sourceType={'twitchClip'}
-                    sourceId={sourceId}
-                    autoPlay
-                    cover=""
-                  />
+                  <TwitchClipPlayer sourceId={sourceId} autoPlay />
                 </div>
               </Modal>
 
               <Grid
-                items={data.twitchChannelTopClips}
+                items={data.twitchTopClips}
                 itemRender={clip => (
                   <Clip key={clip.id}>
                     <ClipPreview>
@@ -218,7 +210,7 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
                 elementWidth={280}
                 afterRedner={
                   <>
-                    {data.twitchChannelTopClips.length === 0 && (
+                    {data.twitchTopClips.length === 0 && (
                       <div>Клипы не найдены</div>
                     )}
                     {loading && <div>Загрузка...</div>}

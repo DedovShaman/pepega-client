@@ -108,7 +108,7 @@ const CloseOut = styled.div`
   width: 60px;
   justify-content: center;
   font-size: 34px;
-  color: ${({ theme }) => theme.accent2Color && rgba(theme.accent2Color, 0.5)};
+  color: ${({ theme }) => theme.accent2Color && rgba(theme.accent2Color, 0.9)};
   cursor: pointer;
 
   :hover {

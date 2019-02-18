@@ -1,11 +1,11 @@
 import gql from 'graphql-tag';
 import Router from 'next/router';
 import { lighten } from 'polished';
-import * as React from 'react';
+import { FC } from 'react';
 import { Mutation } from 'react-apollo';
 import posed from 'react-pose';
 import styled from 'styled-components';
-import { Access } from '../../helpers/Access';
+import { Permission } from '../../helpers/Permission';
 import { Icon } from '../../ui/Icon';
 
 const SET_POST_REACTION = gql`
@@ -62,13 +62,11 @@ interface IProps {
   count: number;
 }
 
-export default class PostReaction extends React.Component<IProps> {
-  public render() {
-    const { id, type, icon, state, count } = this.props;
-
-    return (
-      <Access
-        denyContent={
+export const ClipReaction: FC<IProps> = ({ id, type, icon, state, count }) => (
+  <Permission name="SET_POST_REACTION">
+    {({ deny }) => {
+      if (deny) {
+        return (
           <Box
             onClick={() =>
               Router.push(
@@ -89,8 +87,10 @@ export default class PostReaction extends React.Component<IProps> {
             </LikeButton>
             {count > 0 && <LikesCount active={state}>{count}</LikesCount>}
           </Box>
-        }
-      >
+        );
+      }
+
+      return (
         <Mutation mutation={SET_POST_REACTION}>
           {setPostReaction => (
             <Box>
@@ -111,7 +111,7 @@ export default class PostReaction extends React.Component<IProps> {
             </Box>
           )}
         </Mutation>
-      </Access>
-    );
-  }
-}
+      );
+    }}
+  </Permission>
+);

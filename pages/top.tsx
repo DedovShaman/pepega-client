@@ -1,11 +1,11 @@
-import Posts from '../components/Posts';
+// import Posts from '../components/Posts';
 import Streams from '../components/Streams/Grid';
 import Layout from '../layouts/Main';
 
 const TopPage = () => (
   <Layout>
-    <Streams />
-    <Posts title="Топ за день" titleLink="/top/day" sort="topDay" rows={1} />
+    {/* <Streams /> */}
+    {/* <Posts title="Топ за день" titleLink="/top/day" sort="topDay" rows={1} />
     <Posts
       title="Топ за неделю"
       titleLink="/top/week"
@@ -23,7 +23,7 @@ const TopPage = () => (
       titleLink="/top/all"
       sort="topAll"
       rows={1}
-    />
+    /> */}
   </Layout>
 );
 

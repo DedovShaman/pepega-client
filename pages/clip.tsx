@@ -1,10 +1,10 @@
 import * as React from 'react';
+import { ClipView } from '../components/Clips/ClipView';
 import RightPanel from '../components/Nav/Right';
-import PostFeedView from '../components/PostHelper/FeedView';
 import Streams from '../components/Streams/Column';
 import useRouter from '../hooks/useRouter';
 import Layout from '../layouts/Main';
-import PostProvider from '../providers/Post';
+import ClipProvider from '../providers/Clip';
 import styled from '../theme';
 
 const Box = styled.div`
@@ -23,9 +23,9 @@ const PostBox = styled.div`
 
 const PostPage = () => {
   const router = useRouter();
-  const postId = router.query.id;
+  const clipId = router.query.id;
 
-  if (typeof postId !== 'string') {
+  if (typeof clipId !== 'string') {
     return null;
   }
 
@@ -33,9 +33,9 @@ const PostPage = () => {
     <Layout>
       <Box>
         <PostBox>
-          <PostProvider id={postId}>
-            {({ post }) => <PostFeedView {...post} meta />}
-          </PostProvider>
+          <ClipProvider where={{ id: clipId }}>
+            {({ clip }) => <ClipView {...clip} meta />}
+          </ClipProvider>
         </PostBox>
         <RightPanel.Box>
           <RightPanel.Block>

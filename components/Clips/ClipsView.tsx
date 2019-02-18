@@ -1,13 +1,11 @@
 import gql from 'graphql-tag';
-import { inject, observer } from 'mobx-react';
 import Link from 'next/link';
 import { Component } from 'react';
 import styled from 'styled-components';
-import { IStore } from '../lib/store';
-import PostProvider from '../providers/Post';
-import { Button } from '../ui/Button';
-import { Grid } from '../ui/Grid';
-import PostGridView from './PostHelper/GridView';
+import ClipProvider from '../../providers/Clip';
+import { Button } from '../../ui/Button';
+import { Grid } from '../../ui/Grid';
+import { ClipGridView } from './ClipGridView';
 
 export const GET_POSTS = gql`
   query getPosts(
@@ -72,13 +70,10 @@ interface IProps {
   title?: string;
   titleLink?: string;
   rows?: number;
-  store?: IStore;
   loadMore: () => Promise<any>;
   onPlay: (id: string) => void;
 }
 
-@inject('store')
-@observer
 class PostsView extends Component<IProps> {
   public loadLock = false;
 
@@ -89,7 +84,7 @@ class PostsView extends Component<IProps> {
   public componentDidUpdate() {
     if (
       !this.loadLock &&
-      this.props.store.layoutInLoadArea &&
+      // this.props.store.layoutInLoadArea &&
       !this.props.loading &&
       this.props.hasMore
     ) {
@@ -103,7 +98,6 @@ class PostsView extends Component<IProps> {
   public render() {
     const {
       posts,
-      store,
       loading,
       hasMore,
       loadMore,
@@ -112,9 +106,6 @@ class PostsView extends Component<IProps> {
       rows,
       titleLink
     } = this.props;
-
-    /* tslint:disable */
-    store.layoutInLoadArea;
 
     return (
       <Grid
@@ -135,11 +126,11 @@ class PostsView extends Component<IProps> {
         elementWidth={280}
         itemRender={({ id }) => (
           <PostContainer key={id}>
-            <PostProvider id={id} noRealtime>
-              {({ post }) => (
-                <PostGridView post={post} onPlay={() => onPlay(post.id)} />
+            <ClipProvider where={{ id }} noRealtime>
+              {({ clip }) => (
+                <ClipGridView clip={clip} onPlay={() => onPlay(clip.id)} />
               )}
-            </PostProvider>
+            </ClipProvider>
           </PostContainer>
         )}
         afterRedner={

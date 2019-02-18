@@ -71,11 +71,8 @@ export default class extends React.Component<IProps> {
             fetchPolicy="network-only"
           >
             {({ subscribeToMore, loading, error, data }) => {
-              if (loading) {
+              if (loading || error) {
                 return <div />;
-              }
-              if (error) {
-                return `Error! ${error.message}`;
               }
 
               return (

@@ -1,12 +1,12 @@
 import * as Settings from '../../components/Settings';
-import { Access } from '../../helpers/Access';
+import { Permission } from '../../helpers/Permission';
 import Layout from '../../layouts/Main';
 import { SWRow } from '../../ui/SWRow';
 
 const SettingsAppearancePage = () => (
   <Layout>
     <Settings.Box>
-      <Access>
+      <Permission name="USER_SETTINGS_APPEARANCE">
         <Settings.Title>Внешний вид</Settings.Title>
         <Settings.Content>
           <SWRow
@@ -16,7 +16,7 @@ const SettingsAppearancePage = () => (
             active
           />
         </Settings.Content>
-      </Access>
+      </Permission>
     </Settings.Box>
   </Layout>
 );
