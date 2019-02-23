@@ -1,5 +1,5 @@
 import nanoid from 'nanoid';
-import { lighten, rgba } from 'polished';
+import { darken, lighten, rgba } from 'polished';
 import { FC, useEffect } from 'react';
 import styled from 'styled-components';
 import { Icon } from '../Icon';
@@ -22,8 +22,8 @@ const BGOut = styled.div`
   width: 100%;
   top: 0;
   left: 0;
-  background: ${({ theme }) => theme.dark1Color};
-  opacity: 0.7;
+  background: ${({ theme }) => darken(0.05, theme.dark1Color)};
+  opacity: 0.9;
   z-index: 3000;
 `;
 
@@ -68,6 +68,8 @@ const ModalB = styled.div`
   background: ${({ theme }) =>
     theme.dark2Color && lighten(0.01, theme.dark2Color)};
   border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 `;
 
 const Header = styled.div`
@@ -107,8 +109,8 @@ const CloseOut = styled.div`
   margin-left: auto;
   width: 60px;
   justify-content: center;
-  font-size: 34px;
-  color: ${({ theme }) => theme.accent2Color && rgba(theme.accent2Color, 0.9)};
+  font-size: 30px;
+  color: ${({ theme }) => theme.accent2Color && rgba(theme.accent2Color, 0.5)};
   cursor: pointer;
 
   :hover {
