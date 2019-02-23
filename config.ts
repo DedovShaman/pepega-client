@@ -3,6 +3,7 @@ const commonConfig = {
 };
 
 const devConfig = {
+  baseUrl: 'http://localhost:7000/',
   apiUrl: 'http://localhost:3000/',
   gqlUrl: 'http://localhost:3000/graphql',
   wsgqlUrl: 'ws://localhost:3000/graphql',
@@ -10,6 +11,7 @@ const devConfig = {
 };
 
 const prodConfig = {
+  baseUrl: 'https://twitchru.com/',
   apiUrl: 'https://api.twitchru.com/',
   gqlUrl: 'https://api.twitchru.com/graphql',
   wsgqlUrl: 'wss://api.twitchru.com/graphql',
