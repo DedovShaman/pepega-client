@@ -8,9 +8,11 @@ import styled from 'styled-components';
 import { Permission } from '../../helpers/Permission';
 import { Icon } from '../../ui/Icon';
 
-const SET_POST_REACTION = gql`
-  mutation setPostReaction($postId: ID!, $type: PostReaction!) {
-    setPostReaction(postId: $postId, type: $type)
+const SET_CLIP_REACTION = gql`
+  mutation setClipReaction($clipId: ID!, $reactionType: ReactionType!) {
+    setClipReaction(clipId: $clipId, reactionType: $reactionType) {
+      id
+    }
   }
 `;
 
@@ -63,7 +65,7 @@ interface IProps {
 }
 
 export const ClipReaction: FC<IProps> = ({ id, type, icon, state, count }) => (
-  <Permission name="SET_POST_REACTION">
+  <Permission name="SET_CLIP_REACTION">
     {({ deny }) => {
       if (deny) {
         return (
@@ -91,7 +93,7 @@ export const ClipReaction: FC<IProps> = ({ id, type, icon, state, count }) => (
       }
 
       return (
-        <Mutation mutation={SET_POST_REACTION}>
+        <Mutation mutation={SET_CLIP_REACTION}>
           {setPostReaction => (
             <Box>
               <LikeButton
@@ -99,8 +101,8 @@ export const ClipReaction: FC<IProps> = ({ id, type, icon, state, count }) => (
                 onClick={() =>
                   setPostReaction({
                     variables: {
-                      postId: id,
-                      type: state ? 'none' : type
+                      clipId: id,
+                      reactionType: state ? 'NONE' : type
                     }
                   })
                 }

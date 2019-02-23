@@ -8,6 +8,7 @@ import {
   VKShareButton
 } from 'react-share';
 import styled from 'styled-components';
+import config from '../../config';
 import { Dropdown } from '../../ui/Dropdown';
 import { Icon } from '../../ui/Icon';
 
@@ -61,7 +62,7 @@ interface IProps {
 }
 
 export const ClipShare: FC<IProps> = ({ id }) => {
-  const url = `https://twitchru.com/post?id=${id}`;
+  const url = `${config.baseUrl}clip?id=${id}`;
 
   return (
     <Dropdown

@@ -124,14 +124,12 @@ export const ClipGridView: FC<IProps> = ({ clip, onPlay }) => {
           <Date />
         </BottomLeft>
         <BottomRight>
-          {/* <Rating>
+          <Rating>
             <IconBox>
-              <Icon
-                type={clip && clip.rating < 0 ? 'thumb-down' : 'thumb-up'}
-              />
+              <Icon type={clip && clip.score < 0 ? 'thumb-down' : 'thumb-up'} />
             </IconBox>
-            {shortNumbers(clip ? clip.rating : 0)}
-          </Rating> */}
+            {shortNumbers(clip ? clip.score : 0)}
+          </Rating>
         </BottomRight>
       </Bottom>
     </Box>

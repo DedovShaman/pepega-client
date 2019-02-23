@@ -8,8 +8,8 @@ import { ButtonFlat } from '../../ui/Button';
 import { Dropdown } from '../../ui/Dropdown';
 import { Icon } from '../../ui/Icon';
 
-const REMOVE_CLIP = gql`
-  mutation($id: ID!) {
+const DELETE_CLIP = gql`
+  mutation deleteClip($id: ID!) {
     deleteClip(id: $id)
   }
 `;
@@ -47,29 +47,25 @@ interface IProps {
 }
 
 export const ClipMenu: FC<IProps> = ({ id }) => (
-  <Permission name="CLIP_MANAGE">
-    <Box>
-      <Dropdown
-        overlay={
-          <UserMenu>
-            <Permission name="DELETE_POST" contextId={id}>
-              <Mutation mutation={REMOVE_CLIP}>
-                {deleteClip => (
-                  <UserMenuItem
-                    onClick={() => deleteClip({ variables: { id } })}
-                  >
-                    Удалить
-                  </UserMenuItem>
-                )}
-              </Mutation>
-            </Permission>
-          </UserMenu>
-        }
-      >
-        <ButtonFlat>
-          <Icon type="more-vert" />
-        </ButtonFlat>
-      </Dropdown>
-    </Box>
-  </Permission>
+  <Box>
+    <Dropdown
+      overlay={
+        <UserMenu>
+          <Permission name="DELETE_CLIP" contextId={id}>
+            <Mutation mutation={DELETE_CLIP}>
+              {deleteClip => (
+                <UserMenuItem onClick={() => deleteClip({ variables: { id } })}>
+                  Удалить
+                </UserMenuItem>
+              )}
+            </Mutation>
+          </Permission>
+        </UserMenu>
+      }
+    >
+      <ButtonFlat>
+        <Icon type="more-vert" />
+      </ButtonFlat>
+    </Dropdown>
+  </Box>
 );

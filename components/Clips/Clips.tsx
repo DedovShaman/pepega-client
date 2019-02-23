@@ -96,7 +96,7 @@ export const Clips: FC<IProps> = ({
                     where,
                     orderBy,
                     first: limit,
-                    after: clips[clips.length - 1].id
+                    after: clips.length ? clips[clips.length - 1].id : undefined
                   },
                   updateQuery: (prev, { fetchMoreResult }) => {
                     if (!fetchMoreResult) {

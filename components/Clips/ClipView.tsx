@@ -3,9 +3,10 @@ import { darken, lighten } from 'polished';
 import { FC } from 'react';
 import styled from 'styled-components';
 import { ClipReactionType, IClip } from '../../interfaces/Clip';
+import ClipReactionProvider from '../../providers/ClipCurrentReaction';
 import { Icon } from '../../ui/Icon';
 import { TwitchClipPlayer } from '../../ui/TwitchClipPlayer';
-import Comments from '../Comments';
+import Comments from '../Comments/Comments';
 import { ClipAuthor } from './ClipAuthor';
 import { ClipMenu } from './ClipMenu';
 import { ClipReaction } from './ClipReaction';
@@ -44,7 +45,9 @@ const Title = styled.div`
   }
 `;
 
-const ContentBox = styled.div``;
+const ContentBox = styled.div`
+  background: ${({ theme }) => darken(0.1, theme.dark1Color)};
+`;
 
 const EmptyBottom = styled.div`
   height: 100%;
@@ -100,7 +103,6 @@ export const ClipView: FC<IProps> = ({
   dislikes,
   clipId,
   channel,
-  reaction,
   createdAt,
   author,
   meta,
@@ -110,7 +112,7 @@ export const ClipView: FC<IProps> = ({
     <Box>
       <Head>
         <title>{title && title}</title>
-        {meta && (
+        {meta && id && (
           <>
             <meta property="og:title" content={title} />
             <meta property="og:description" content={title} />
@@ -124,9 +126,9 @@ export const ClipView: FC<IProps> = ({
       </Head>
       <Top>
         <Title>
-          <span>{title}</span>
+          <span>{title && title}</span>
         </Title>
-        {channel.name && (
+        {channel && channel.name && (
           <ChannelLink
             href={`https://twitch.tv/${channel.name}`}
             target="_blank"
@@ -140,27 +142,38 @@ export const ClipView: FC<IProps> = ({
         <TwitchClipPlayer sourceId={clipId} autoPlay={autoPlay} />
       </ContentBox>
       <Bottom>
-        <ClipReaction
-          id={id}
-          type="like"
-          state={reaction === ClipReactionType.like}
-          count={likes}
-          icon="thumb-up"
-        />
-        <ClipReaction
-          id={id}
-          type="dislike"
-          state={reaction === ClipReactionType.dislike}
-          count={dislikes}
-          icon="thumb-down"
-        />
+        <ClipReactionProvider clipId={id}>
+          {({ clipReaction }) => (
+            <>
+              <ClipReaction
+                id={id}
+                type="LIKE"
+                state={
+                  clipReaction && clipReaction.type === ClipReactionType.LIKE
+                }
+                count={likes}
+                icon="thumb-up"
+              />
+              <ClipReaction
+                id={id}
+                type="DISLIKE"
+                state={
+                  clipReaction && clipReaction.type === ClipReactionType.DISLIKE
+                }
+                count={dislikes}
+                icon="thumb-down"
+              />
+            </>
+          )}
+        </ClipReactionProvider>
+
         <ClipShare id={id} />
         {author && <ClipMenu id={id} authorId={author.id} />}
         <EmptyBottom />
         {author && <ClipAuthor createdAt={createdAt} authorId={author.id} />}
       </Bottom>
       <CommentsBox>
-        <Comments postId={id} />
+        <Comments clipId={id} />
       </CommentsBox>
     </Box>
   );
