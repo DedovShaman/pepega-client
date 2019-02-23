@@ -8,15 +8,15 @@ const IndexPage = () => (
     <Clips
       title="Топ за день"
       titleLink="/top/day"
-      orderBy="createdAt_DESC"
-      rows={1}
+      orderBy="score_DESC"
+      rows={2}
     />
-    <Clips
+    {/* <Clips
       title="В тренде"
       titleLink="/hot"
       orderBy="createdAt_DESC"
       rows={1}
-    />
+    /> */}
     <Clips title="Новое" titleLink="/new" orderBy="createdAt_DESC" />
   </Layout>
 );
