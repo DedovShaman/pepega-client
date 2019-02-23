@@ -1,89 +1,66 @@
-import * as React from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
+import CommentsProvider from '../../providers/Comments';
 import Comment from './Comment';
+import NewComment from './NewComment';
 
-const Messages = styled.div`
-  position: relative;
-  overflow-y: hidden;
+const compactMessages = messages => {
+  const compactInterval = 90e3; // 1,5 min
+
+  return messages.map((message, index, array) => {
+    let compact = false;
+
+    if (index > 0) {
+      const diff =
+        new Date(message.createdAt).getTime() -
+        new Date(array[index - 1].createdAt).getTime();
+
+      if (
+        diff < compactInterval &&
+        message.author.id === array[index - 1].author.id
+      ) {
+        compact = true;
+      }
+    }
+
+    return {
+      ...message,
+      compact
+    };
+  });
+};
+
+const Box = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1;
+  width: 100%;
+  height: 100%;
+`;
+
+const CommentsBox = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 interface IProps {
-  subscribeNewChatMessages: () => void;
-  subscribeRemoveChatMessages: () => void;
-  subscribeRemoveChatMessagesByUserId: () => void;
-  messages: any;
+  clipId: string;
 }
 
-interface IState {
-  isBottom: boolean;
-  fixBottom: boolean;
-}
+const Comments: FC<IProps> = ({ clipId }) => (
+  <Box>
+    <CommentsBox>
+      <CommentsProvider where={{ clip: { id: clipId } }}>
+        {({ comments }) => (
+          <>
+            {compactMessages(comments).map(comment => (
+              <Comment key={comment.id} {...comment} />
+            ))}
+          </>
+        )}
+      </CommentsProvider>
+    </CommentsBox>
+    <NewComment clipId={clipId} />
+  </Box>
+);
 
-export default class extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isBottom: false,
-      fixBottom: false
-    };
-  }
-
-  public componentDidMount() {
-    this.props.subscribeNewChatMessages();
-    this.props.subscribeRemoveChatMessages();
-    this.props.subscribeRemoveChatMessagesByUserId();
-
-    setTimeout(() => {
-      this.setState({
-        isBottom: true,
-        fixBottom: true
-      });
-    }, 10);
-  }
-
-  public compactMessages = messages => {
-    const compactInterval = 90e3; // 1,5 min
-
-    return messages.map((message, index, array) => {
-      let compact = false;
-
-      if (index > 0) {
-        const diff =
-          parseInt(message.createdAt, 10) -
-          parseInt(array[index - 1].createdAt, 10);
-
-        if (
-          diff < compactInterval &&
-          message.authorId === array[index - 1].authorId
-        ) {
-          compact = true;
-        }
-      }
-
-      return {
-        ...message,
-        compact
-      };
-    });
-  };
-
-  public setBottom = isBottom => {
-    this.setState({ isBottom, fixBottom: isBottom });
-  };
-
-  public render() {
-    const messages = this.compactMessages(this.props.messages);
-
-    return (
-      <Messages>
-        {messages.map(message => (
-          <Comment key={message.id} {...message} />
-        ))}
-      </Messages>
-    );
-  }
-}
+export default Comments;

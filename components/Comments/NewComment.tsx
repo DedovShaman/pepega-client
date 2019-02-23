@@ -5,9 +5,11 @@ import styled from 'styled-components';
 import { Permission } from '../../helpers/Permission';
 import { convertTextToEmojiCode } from '../../utils/emoji';
 
-const CREATE_COMMENT = gql`
-  mutation($postId: ID!, $text: String!) {
-    createComment(postId: $postId, text: $text)
+const NEW_COMMENT = gql`
+  mutation newComment($data: NewCommentInput!) {
+    newComment(data: $data) {
+      id
+    }
   }
 `;
 
@@ -31,7 +33,7 @@ const MessagesBottom = styled.div`
 `;
 
 interface IProps {
-  postId: string;
+  clipId: string;
 }
 
 export default class extends React.Component<IProps> {
@@ -39,7 +41,7 @@ export default class extends React.Component<IProps> {
   public lock: boolean = false;
 
   public render() {
-    const { postId } = this.props;
+    const { clipId } = this.props;
 
     return (
       <MessagesBottom>
@@ -57,15 +59,15 @@ export default class extends React.Component<IProps> {
 
             return (
               <Mutation
-                mutation={CREATE_COMMENT}
-                onCompleted={({ createComment }) => {
-                  if (createComment) {
+                mutation={NEW_COMMENT}
+                onCompleted={({ newComment }) => {
+                  if (newComment) {
                     this.textInput.value = '';
                     this.lock = false;
                   }
                 }}
               >
-                {createComment => (
+                {newComment => (
                   <>
                     <input
                       ref={input => {
@@ -75,18 +77,18 @@ export default class extends React.Component<IProps> {
                       type="text"
                       placeholder="Написать комментарий..."
                       onKeyPress={e => {
-                        const text = convertTextToEmojiCode(
+                        const content = convertTextToEmojiCode(
                           this.textInput.value.trim()
                         );
 
                         if (
                           e.key === 'Enter' &&
                           !this.lock &&
-                          text.length > 0
+                          content.length > 0
                         ) {
                           this.lock = true;
-                          createComment({
-                            variables: { postId, text }
+                          newComment({
+                            variables: { data: { clipId, content } }
                           });
                         }
                       }}
