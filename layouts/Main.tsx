@@ -129,12 +129,12 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent }) => {
               <Scrollbars autoHide universal>
                 <LeftMenu.Box>
                   <LeftMenu.Item route="/" equal icon="home" title="Главная" />
-                  <LeftMenu.Item
+                  {/* <LeftMenu.Item
                     equal
                     route="/hot"
                     icon="fire"
                     title="В тренде"
-                  />
+                  /> */}
                   <LeftMenu.Item
                     equal
                     route="/new"
