@@ -1,7 +1,7 @@
 export enum ClipReactionType {
-  like = 'like',
-  dislike = 'dislike',
-  none = 'none'
+  LIKE = 'LIKE',
+  DISLIKE = 'DISLIKE',
+  NONE = 'NONE'
 }
 
 export interface IClip {
@@ -14,7 +14,7 @@ export interface IClip {
   liked?: boolean;
   likes?: number;
   dislikes?: number;
-  rating?: number;
+  score?: number;
   createdAt?: string;
   channel?: any;
   reaction?: ClipReactionType;
