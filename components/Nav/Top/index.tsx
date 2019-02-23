@@ -4,6 +4,7 @@ import { darken, lighten } from 'polished';
 import { FC } from 'react';
 import { Query } from 'react-apollo';
 import styled from 'styled-components';
+import { Permission } from '../../../helpers/Permission';
 import useRouter from '../../../hooks/useRouter';
 import UserProvider from '../../../providers/User';
 import WalletProvider from '../../../providers/Wallet';
@@ -248,107 +249,101 @@ const TopNav: FC<IProps> = ({ leftMenuTrigger }) => {
       </Left>
       <Right>
         <UserBox>
-          <UserProvider>
-            {({ user }) =>
-              user ? (
-                <>
-                  <Links>
-                    <Link
-                      as={`/newClip`}
-                      href={{
-                        pathname: router.route,
-                        query: {
-                          ...router.query,
-                          newClipModal: 1
-                        }
-                      }}
-                      passHref
-                    >
-                      <TopLink>Закинуть клип</TopLink>
-                    </Link>
-                  </Links>
-                  <PointsBox>
-                    <Query query={GET_WALLETS}>
-                      {({ loading, error, data }) => {
-                        if (loading || error) {
-                          return null;
-                        }
+          <Links>
+            <Permission name="CREATE_CLIP">
+              {({ deny }) => (
+                <Link
+                  as={`${deny ? 'auth?continue=' : ''}/newClip`}
+                  href={{
+                    pathname: router.route,
+                    query: {
+                      ...router.query,
+                      authModal: deny ? 1 : 0,
+                      newClipModal: deny ? 0 : 1
+                    }
+                  }}
+                  passHref
+                >
+                  <TopLink>Закинуть клип</TopLink>
+                </Link>
+              )}
+            </Permission>
 
-                        return (
-                          <>
-                            {data.coinWallets.map(w => (
-                              <WalletProvider key={w.id} where={{ id: w.id }}>
-                                {({ wallet }) => (
-                                  <Points>
-                                    <PointsIconCoin />
-                                    <PointsCount>
-                                      {humanNumbers(wallet.balance)}
-                                    </PointsCount>
-                                  </Points>
-                                )}
-                              </WalletProvider>
-                            ))}
-                            {data.realWallets.map(w => (
-                              <WalletProvider key={w.id} where={{ id: w.id }}>
-                                {({ wallet }) => (
-                                  <Points>
-                                    <PointsIconReal />
-                                    <PointsCount>
-                                      {humanNumbers(wallet.balance)}
-                                    </PointsCount>
-                                  </Points>
-                                )}
-                              </WalletProvider>
-                            ))}
-                          </>
-                        );
-                      }}
-                    </Query>
-                  </PointsBox>
-                  <Menu user={user}>
-                    <UserDataBox>
-                      <UserNameBox>{user.name}</UserNameBox>
-                      <AvatarBox>
-                        <Avatar avatar={user.avatar} />
-                      </AvatarBox>
-                      <UserCaratBox>
-                        <Icon type="caret-down" />
-                      </UserCaratBox>
-                    </UserDataBox>
-                  </Menu>
-                </>
-              ) : (
-                <Links>
-                  <Link
-                    as={`/auth?continue=/newClip`}
-                    href={{
-                      pathname: router.route,
-                      query: {
-                        ...router.query,
-                        authModal: 1
-                      }
-                    }}
-                    passHref
-                  >
-                    <TopLink>Закинуть клип</TopLink>
-                  </Link>
-                  <Link
-                    as={`/auth?continue=${router.asPath}`}
-                    href={{
-                      pathname: router.route,
-                      query: {
-                        ...router.query,
-                        authModal: 1
-                      }
-                    }}
-                    passHref
-                  >
-                    <TopLink>Войти</TopLink>
-                  </Link>
-                </Links>
-              )
-            }
-          </UserProvider>
+            <Permission invert>
+              <Link
+                as={`/auth?continue=${router.asPath}`}
+                href={{
+                  pathname: router.route,
+                  query: {
+                    ...router.query,
+                    authModal: 1
+                  }
+                }}
+                passHref
+              >
+                <TopLink>Войти</TopLink>
+              </Link>
+            </Permission>
+          </Links>
+
+          <Permission name="GET_WALLETS">
+            <PointsBox>
+              <Query query={GET_WALLETS} ssr={false}>
+                {({ loading, error, data }) => {
+                  if (loading || error) {
+                    return null;
+                  }
+
+                  return (
+                    <>
+                      {data.coinWallets.map(w => (
+                        <WalletProvider key={w.id} where={{ id: w.id }}>
+                          {({ wallet }) => (
+                            <Points>
+                              <PointsIconCoin />
+                              <PointsCount>
+                                {humanNumbers(wallet.balance)}
+                              </PointsCount>
+                            </Points>
+                          )}
+                        </WalletProvider>
+                      ))}
+                      {data.realWallets.map(w => (
+                        <WalletProvider key={w.id} where={{ id: w.id }}>
+                          {({ wallet }) => (
+                            <Points>
+                              <PointsIconReal />
+                              <PointsCount>
+                                {humanNumbers(wallet.balance)}
+                              </PointsCount>
+                            </Points>
+                          )}
+                        </WalletProvider>
+                      ))}
+                    </>
+                  );
+                }}
+              </Query>
+            </PointsBox>
+          </Permission>
+
+          <Permission>
+            <UserProvider>
+              {({ user }) => (
+                <Menu user={user}>
+                  <UserDataBox>
+                    <UserNameBox>{user.name}</UserNameBox>
+                    <AvatarBox>
+                      <Avatar avatar={user.avatar} />
+                    </AvatarBox>
+                    <UserCaratBox>
+                      <Icon type="caret-down" />
+                    </UserCaratBox>
+                  </UserDataBox>
+                </Menu>
+              )}
+            </UserProvider>
+          </Permission>
         </UserBox>
       </Right>
     </Box>

@@ -47,7 +47,7 @@ export default class PostMenu extends React.Component<IProps> {
         <Link href={`/user?id=${user.id}`} passHref>
           <UserMenuItem>Профиль</UserMenuItem>
         </Link>
-        <Permission name="MANAGE">
+        <Permission>
           <Link href="/manage" passHref>
             <UserMenuItem>Панель управления</UserMenuItem>
           </Link>
