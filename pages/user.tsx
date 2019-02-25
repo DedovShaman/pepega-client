@@ -82,7 +82,7 @@ const UserPage = () => {
 
               <PostsBox>
                 <Streams />
-                {/* <Posts title="Клипы" authorId={user.id} sort="new" /> */}
+                {/* <Posts title="Клипы" where={{ author: { id: user.id } }} /> */}
               </PostsBox>
             </Box>
           </Layout>

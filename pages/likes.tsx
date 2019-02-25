@@ -5,8 +5,8 @@ import Streams from '../components/Streams/Grid';
 import Layout from '../layouts/Main';
 
 const GET_USER = gql`
-  query getUser {
-    user {
+  query getCurrentUser {
+    user(where: { id: "" }) {
       id
     }
   }
@@ -24,12 +24,15 @@ const LikesPage = () => (
           return 'User not found';
         }
 
-        const user = data.user;
-
         return (
           <>
-            <Streams />
-            {/* <Posts title="Понравившиеся" likedUserId={user.id} /> */}
+            {/* <Streams /> */}
+            <Clips
+              title="Понравившиеся"
+              where={{
+                reactions_some: { type: 'LIKE', user: { id: data.user.id } }
+              }}
+            />
           </>
         );
       }}

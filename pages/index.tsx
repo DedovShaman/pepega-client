@@ -1,6 +1,9 @@
 import { Clips } from '../components/Clips/Clips';
 import Streams from '../components/Streams/Grid';
 import Layout from '../layouts/Main';
+import { now } from '../utils/now';
+
+const dayAgo = now('-1d').toISOString();
 
 const IndexPage = () => (
   <Layout>
@@ -8,15 +11,10 @@ const IndexPage = () => (
     <Clips
       title="Топ за день"
       titleLink="/top/day"
+      where={{ createdAt_gt: dayAgo, score_gt: 0 }}
       orderBy="score_DESC"
       rows={2}
     />
-    {/* <Clips
-      title="В тренде"
-      titleLink="/hot"
-      orderBy="createdAt_DESC"
-      rows={1}
-    /> */}
     <Clips title="Новое" titleLink="/new" orderBy="createdAt_DESC" />
   </Layout>
 );
