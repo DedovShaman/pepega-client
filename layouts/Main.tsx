@@ -228,12 +228,9 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent }) => {
             <PostsBox id="layoutContent">
               {fixedTopContent}
               <Scrollbars
+                renderView={props => <div {...props} id="mainScroll" />}
                 autoHide
                 universal
-                onScrollFrame={e => {
-                  const offset = e.scrollHeight - e.scrollTop - e.clientHeight;
-                  // store.setLayoutInLoadArea(offset <= 250);
-                }}
               >
                 {children}
               </Scrollbars>

@@ -1,9 +1,13 @@
 import gql from 'graphql-tag';
+import Link from 'next/link';
 import { FC } from 'react';
 import { Query } from 'react-apollo';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import styled from 'styled-components';
 import useRouter from '../../hooks/useRouter';
-import ClipsView from './ClipsView';
+import ClipProvider from '../../providers/Clip';
+import { Grid } from '../../ui/Grid';
+import { ClipGridView } from './ClipGridView';
 
 export const GET_CLIPS = gql`
   query getClips(
@@ -24,6 +28,25 @@ const Box = styled.div`
   width: 100%;
 `;
 
+const SectionTitle = styled.div`
+  display: flex;
+  width: 100%;
+  font-size: 18px;
+  padding: 15px 0;
+
+  a {
+    cursor: pointer;
+  }
+`;
+
+const ClipContainer = styled.div`
+  padding: 5px;
+`;
+
+const Divider = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.dark2Color};
+  margin: 10px;
+`;
 interface IProps {
   where?: any;
   orderBy?: any;
@@ -64,33 +87,12 @@ export const Clips: FC<IProps> = ({
           const clips = data.clips;
 
           return (
-            <ClipsView
-              title={title}
-              titleLink={titleLink}
-              posts={clips}
-              loading={loading}
-              rows={rows}
-              hasMore={!rows && !noMore}
-              onPlay={id => {
-                router.push(
-                  {
-                    pathname: router.route,
-                    query: {
-                      clipId: id,
-                      backPath: router.asPath,
-                      ...router.query
-                    }
-                  },
-                  {
-                    pathname: '/clip',
-                    query: { id }
-                  },
-                  {
-                    shallow: true
-                  }
-                );
-              }}
-              loadMore={() =>
+            <InfiniteScroll
+              dataLength={clips.length}
+              hasMore={!rows && !noMore && !loading}
+              scrollableTarget="mainScroll"
+              next={() => {
+                console.log('next');
                 fetchMore({
                   variables: {
                     where,
@@ -108,9 +110,60 @@ export const Clips: FC<IProps> = ({
                       clips: [...prev.clips, ...fetchMoreResult.clips]
                     };
                   }
-                })
-              }
-            />
+                });
+              }}
+            >
+              <Grid
+                beforeRender={
+                  <>
+                    {title && !titleLink && (
+                      <SectionTitle>{title}</SectionTitle>
+                    )}
+                    {title && titleLink && (
+                      <SectionTitle>
+                        <Link href={titleLink} passHref>
+                          <a>{title}</a>
+                        </Link>
+                      </SectionTitle>
+                    )}
+                  </>
+                }
+                maxRows={rows}
+                items={clips}
+                elementWidth={280}
+                itemRender={({ id }) => (
+                  <ClipContainer key={id}>
+                    <ClipProvider where={{ id }} noRealtime>
+                      {({ clip }) => (
+                        <ClipGridView
+                          clip={clip}
+                          onPlay={() => {
+                            router.push(
+                              {
+                                pathname: router.route,
+                                query: {
+                                  clipId: id,
+                                  backPath: router.asPath,
+                                  ...router.query
+                                }
+                              },
+                              {
+                                pathname: '/clip',
+                                query: { id }
+                              },
+                              {
+                                shallow: true
+                              }
+                            );
+                          }}
+                        />
+                      )}
+                    </ClipProvider>
+                  </ClipContainer>
+                )}
+                afterRedner={<Divider />}
+              />
+            </InfiniteScroll>
           );
         }}
       </Query>

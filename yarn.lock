@@ -8955,6 +8955,11 @@ react-fuzzy@^0.5.2:
     fuse.js "^3.0.1"
     prop-types "^15.5.9"
 
+react-infinite-scroll-component@4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/react-infinite-scroll-component/-/react-infinite-scroll-component-4.5.0.tgz#c1d5b8709cdf2721eae113e0d603dbdf1e5c71d2"
+  integrity sha512-oXVy9a+pYReYwUMqlKoOv/4rlcVMsd4NVf7VO+c7Efytm0DIP0pMf5wBwirL8TMS2p69eWdL++R8OjzGb15q3Q==
+
 react-inspector@^2.3.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-2.3.1.tgz#f0eb7f520669b545b441af9d38ec6d706e5f649c"
