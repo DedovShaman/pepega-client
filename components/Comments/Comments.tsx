@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 import CommentsProvider from '../../providers/Comments';
-import Comment from './Comment';
+import { Comment } from './Comment';
 import NewComment from './NewComment';
 
 const compactMessages = messages => {

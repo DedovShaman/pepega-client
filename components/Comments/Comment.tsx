@@ -1,15 +1,15 @@
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import ruLocale from 'date-fns/locale/ru';
 import gql from 'graphql-tag';
-import Link from 'next/link';
 import { darken, lighten } from 'polished';
-import * as React from 'react';
+import { FC } from 'react';
 import { Mutation, Query } from 'react-apollo';
 import styled from 'styled-components';
 import { Permission } from '../../helpers/Permission';
+import { WithEmoji } from '../../helpers/WithEmoji';
 import { Dropdown } from '../../ui/Dropdown';
-import { Emoji } from '../../ui/Emoji';
-import { splitTextToEmojiArray } from '../../utils/emoji';
+import { Icon } from '../../ui/Icon';
+import { CommentUserMenu } from './CommentUserMenu';
 
 const GET_USER = gql`
   query getUser($where: UserWhereUniqueInput!) {
@@ -18,18 +18,6 @@ const GET_USER = gql`
       name
       avatar
     }
-  }
-`;
-
-const SET_USER_BAN = gql`
-  mutation setUserBan($id: ID!) {
-    setUserBan(id: $id)
-  }
-`;
-
-const UNSET_USER_BAN = gql`
-  mutation unsetUserBan($id: ID!) {
-    unsetUserBan(id: $id)
   }
 `;
 
@@ -153,25 +141,6 @@ const ManageItem = styled.div`
   }
 `;
 
-const UserMenu = styled.div`
-  background: ${({ theme }) => theme.dark1Color};
-  border-radius: 3px;
-  overflow: hidden;
-  margin: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-`;
-
-const UserMenuItem = styled.div`
-  font-size: 13px;
-  padding: 10px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  :hover {
-    background: ${({ theme }) => darken(0.05, theme.dark1Color)};
-  }
-`;
-
 interface IProps {
   id: string;
   content: string;
@@ -180,142 +149,83 @@ interface IProps {
   author: any;
 }
 
-export default class extends React.Component<IProps, {}> {
-  public renderContent = () => {
-    const { content } = this.props;
-    return splitTextToEmojiArray(content).map((elm, index) => {
-      if (elm.type === 'text') {
-        return <React.Fragment key={index}>{elm.value}</React.Fragment>;
+export const Comment: FC<IProps> = ({
+  id,
+  compact,
+  content,
+  createdAt,
+  author
+}) => (
+  <Query query={GET_USER} variables={{ where: { id: author.id } }}>
+    {({ loading, error, data }) => {
+      if (loading) {
+        return <div />;
       }
 
-      if (elm.type === 'emoji') {
-        return <Emoji key={index} name={elm.name} />;
+      if (error || !data.user) {
+        return null;
       }
-    });
-  };
 
-  public renderUserMenu(user) {
-    return (
-      <UserMenu>
-        <Link href={`user?id=${user.id}`}>
-          <UserMenuItem>Профиль</UserMenuItem>
-        </Link>
+      const user = data.user;
 
-        {/* <Permission name="SET_USER_BAN" contextId={user.id}>
-          <Mutation mutation={SET_USER_BAN}>
-            {setUserBan => (
-              <UserMenuItem
-                onClick={() =>
-                  setUserBan({
-                    variables: {
-                      id: user.id
-                    }
-                  })
-                }
-              >
-                Забанить
-              </UserMenuItem>
-            )}
-          </Mutation>
-        </Permission>
+      const usernameColors = {
+        admin: 'rgb(194, 121, 121)',
+        mod: 'rgb(124, 194, 121)'
+      };
 
-        <Permission name="UNSET_USER_BAN" contextId={user.id}>
-          <Mutation mutation={UNSET_USER_BAN}>
-            {unsetUserBan => (
-              <UserMenuItem
-                onClick={() =>
-                  unsetUserBan({
-                    variables: {
-                      id: user.id
-                    }
-                  })
-                }
-              >
-                Разабанить
-              </UserMenuItem>
-            )}
-          </Mutation>
-        </Permission> */}
-      </UserMenu>
-    );
-  }
+      const userColor = usernameColors[user.role]
+        ? usernameColors[user.role]
+        : undefined;
 
-  public renderMessage(user) {
-    const { compact } = this.props;
+      const date =
+        createdAt &&
+        distanceInWordsToNow(createdAt, {
+          locale: ruLocale
+        }) + ' назад';
 
-    const usernameColors = {
-      admin: 'rgb(194, 121, 121)',
-      mod: 'rgb(124, 194, 121)'
-    };
-
-    const userColor = usernameColors[user.role]
-      ? usernameColors[user.role]
-      : undefined;
-
-    console.log(compact);
-
-    const date =
-      this.props.createdAt &&
-      distanceInWordsToNow(this.props.createdAt, {
-        locale: ruLocale
-      }) + ' назад';
-
-    return (
-      <Message>
-        {!compact && (
-          <Header>
-            <Dropdown overlay={this.renderUserMenu(user)}>
-              <Avatar>
-                {user.avatar ? <AvatarImg src={user.avatar} /> : <AvatarNone />}
-              </Avatar>
-            </Dropdown>
-            <Username userColor={userColor}>{user.name}</Username>
-            <Date>{date}</Date>
-          </Header>
-        )}
-        <Content>
-          <Text>{this.renderContent()}</Text>
-          <ManageMenu>
-            <Permission name="DELETE_COMMENT" contextId={this.props.id}>
-              <Mutation mutation={DELETE_MESSAGE}>
-                {deleteComment => (
-                  <ManageItem
-                    onClick={() =>
-                      deleteComment({
-                        variables: {
-                          where: { id: this.props.id }
-                        }
-                      })
-                    }
-                  >
-                    <i className="zmdi zmdi-close" />
-                  </ManageItem>
-                )}
-              </Mutation>
-            </Permission>
-          </ManageMenu>
-        </Content>
-      </Message>
-    );
-  }
-
-  public render() {
-    const { author } = this.props;
-
-    return (
-      <Query query={GET_USER} variables={{ where: { id: author.id } }}>
-        {({ loading, error, data }) => {
-          if (loading) {
-            return <div />;
-          }
-
-          if (error || !data.user) {
-            return null;
-          }
-
-          return this.renderMessage(data.user);
-        }}
-      </Query>
-    );
-  }
-}
+      return (
+        <Message>
+          {!compact && (
+            <Header>
+              <Dropdown overlay={<CommentUserMenu id={user.id} />}>
+                <Avatar>
+                  {user.avatar ? (
+                    <AvatarImg src={user.avatar} />
+                  ) : (
+                    <AvatarNone />
+                  )}
+                </Avatar>
+              </Dropdown>
+              <Username userColor={userColor}>{user.name}</Username>
+              <Date>{date}</Date>
+            </Header>
+          )}
+          <Content>
+            <Text>
+              <WithEmoji>{content}</WithEmoji>
+            </Text>
+            <ManageMenu>
+              <Permission name="DELETE_COMMENT" contextId={id}>
+                <Mutation mutation={DELETE_MESSAGE}>
+                  {deleteComment => (
+                    <ManageItem
+                      onClick={() =>
+                        deleteComment({
+                          variables: {
+                            where: { id }
+                          }
+                        })
+                      }
+                    >
+                      <Icon type="close" />
+                    </ManageItem>
+                  )}
+                </Mutation>
+              </Permission>
+            </ManageMenu>
+          </Content>
+        </Message>
+      );
+    }}
+  </Query>
+);
