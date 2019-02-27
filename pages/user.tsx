@@ -10,24 +10,17 @@ import Layout from '../layouts/Main';
 import styled from '../theme';
 
 const GET_USER = gql`
-  query getUser($id: ID) {
-    user(id: $id) {
+  query getUserData($id: ID!) {
+    clipsCount(where: { author: { id: $id }, deletedAt: null })
+    user(where: { id: $id }) {
       id
-      role
-      postsCount
-      mainProfile {
+      name
+      avatar
+      profiles(where: { visible: true }) {
         id
         name
         avatar
-        serviceName
-        serviceId
-        visible
-      }
-      profiles {
-        id
-        name
-        avatar
-        serviceName
+        type
         serviceId
         visible
       }
@@ -74,15 +67,22 @@ const UserPage = () => {
         const user = data.user;
 
         return (
-          <Layout fixedTopContent={<UserPanelProfile user={user} />}>
+          <Layout
+            fixedTopContent={
+              <UserPanelProfile user={user} clipsCount={data.clipsCount} />
+            }
+          >
             <Box>
               <Head>
-                <title>{user.mainProfile.name}</title>
+                <title>{user.name}</title>
               </Head>
 
               <PostsBox>
                 <Streams />
-                {/* <Posts title="Клипы" where={{ author: { id: user.id } }} /> */}
+                <Clips
+                  title="Клипы"
+                  where={{ deletedAt: null, author: { id: user.id } }}
+                />
               </PostsBox>
             </Box>
           </Layout>
