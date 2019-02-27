@@ -105,16 +105,16 @@ const SocialLinkOne = ({ profile }) => {
   let iconType = '';
   let socialLink = '';
 
-  switch (profile.serviceName) {
-    case 'twitch':
+  switch (profile.type) {
+    case 'TWITCH':
       iconType = 'twitch';
-      socialLink = `https://www.twitch.tv/${profile.name.toLowerCase()}`;
+      socialLink = `https://twitch.tv/${profile.name.toLowerCase()}`;
       break;
-    case 'vkontakte':
+    case 'VK':
       iconType = 'vk';
       socialLink = `https://vk.com/id${profile.serviceId}`;
       break;
-    case 'google':
+    case 'GOOGLE':
       iconType = 'google';
       socialLink = `https://plus.google.com/${profile.serviceId}`;
       break;
@@ -131,22 +131,23 @@ const SocialLinkOne = ({ profile }) => {
 
 interface IProps {
   user: any;
+  clipsCount: number;
 }
 
-export const PanelProfile: FC<IProps> = ({ user }) => (
+export const PanelProfile: FC<IProps> = ({ user, clipsCount }) => (
   <Box>
     <Container>
       <UserData>
         <UserAvatar>
-          <UserAvatarImg src={user.mainProfile.avatar} />
+          <UserAvatarImg src={user.avatar} />
         </UserAvatar>
-        <UserName>{user.mainProfile.name}</UserName>
+        <UserName>{user.name}</UserName>
       </UserData>
       <Menu>
         <MenuLeft>
           <MenuItem>
             <MenuItemTitle>Клипы</MenuItemTitle>
-            <MenuItemCount>{shortNumbers(user.postsCount)}</MenuItemCount>
+            <MenuItemCount>{shortNumbers(clipsCount)}</MenuItemCount>
           </MenuItem>
         </MenuLeft>
         <MenuRight>
