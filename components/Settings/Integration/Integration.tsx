@@ -1,17 +1,15 @@
 import gql from 'graphql-tag';
-import Link from 'next/link';
 import { darken, lighten } from 'polished';
 import { FC } from 'react';
 import { Mutation } from 'react-apollo';
 import styled from 'styled-components';
-import config from '../../../config';
 import { Button } from '../../../ui/Button';
 import { Icon } from '../../../ui/Icon';
 import { SWRow } from '../../../ui/SWRow';
 
 const SET_PROFILE_VISIBLE = gql`
-  mutation setUserProfileVisible($id: ID!, $visible: Boolean!) {
-    setUserProfileVisible(id: $id, visible: $visible)
+  mutation setProfileVisible($id: ID!, $visible: Boolean!) {
+    setProfileVisible(id: $id, visible: $visible)
   }
 `;
 
@@ -28,14 +26,13 @@ const IntegrationBox = styled.div`
 `;
 
 const IntegrationHeader = styled('div')<{
-  noContent: boolean;
   bgColor: string;
 }>`
   padding: 0 10px;
   display: flex;
   align-items: center;
   height: 50px;
-  border-radius: ${({ noContent }) => (noContent ? '5px' : '5px 5px 0 0')};
+  border-radius: 5px 5px 0 0;
   background: ${({ bgColor }) => darken(0.1, bgColor)};
 `;
 
@@ -68,35 +65,52 @@ const IntegrationContent = styled('div')<{
 `;
 
 interface IProps {
-  serviceName: string;
-  bgColor: string;
-  icon: string;
   profile: any;
   denyDisconnect?: boolean;
 }
 
-export const Integration: FC<IProps> = ({
-  serviceName,
-  bgColor,
-  icon,
-  profile,
-  denyDisconnect
-}) => {
-  const isConnect = !!profile;
+export const Integration: FC<IProps> = ({ profile, denyDisconnect }) => {
+  let bgColor = null;
+  let icon = null;
+  let socialLink = '';
+
+  switch (profile.type) {
+    case 'GOOGLE': {
+      bgColor = '#DB4437';
+      icon = 'google';
+      socialLink = `https://plus.google.com/${profile.serviceId}`;
+      break;
+    }
+    case 'VK': {
+      bgColor = '#507299';
+      icon = 'vkontakte';
+      socialLink = `https://vk.com/id${profile.serviceId}`;
+      break;
+    }
+    case 'TWITCH': {
+      bgColor = '#6542a6';
+      icon = 'twitch';
+      socialLink = `https://twitch.tv/${profile.name.toLowerCase()}`;
+      break;
+    }
+    default: {
+      return null;
+    }
+  }
 
   return (
     <IntegrationBox>
-      <IntegrationHeader bgColor={bgColor} noContent={!isConnect}>
+      <IntegrationHeader bgColor={bgColor}>
         <IntegrationLogo>
           <Icon type={icon} />
         </IntegrationLogo>
-        {isConnect && (
-          <IntegrationUsername bgColor={bgColor}>
+        <IntegrationUsername bgColor={bgColor}>
+          <a href={socialLink} target="_blank">
             {profile.name}
-          </IntegrationUsername>
-        )}
+          </a>
+        </IntegrationUsername>
         <IntegrationHeaderActions>
-          {isConnect && !denyDisconnect && (
+          {!denyDisconnect && (
             <Mutation mutation={DISCONNECT_PROFILE}>
               {disconnectProfile => (
                 <Button
@@ -112,31 +126,24 @@ export const Integration: FC<IProps> = ({
               )}
             </Mutation>
           )}
-          {!isConnect && (
-            <Link href={`${config.apiUrl}auth/connect/${serviceName}`}>
-              <Button mainColor={bgColor}>Подключить</Button>
-            </Link>
-          )}
         </IntegrationHeaderActions>
       </IntegrationHeader>
-      {isConnect && (
-        <IntegrationContent bgColor={bgColor}>
-          <Mutation mutation={SET_PROFILE_VISIBLE}>
-            {setUserProfileVisible => (
-              <SWRow
-                active={profile.visible}
-                title="Показывать в профиле"
-                onChange={() =>
-                  setUserProfileVisible({
-                    variables: { id: profile.id, visible: !profile.visible }
-                  })
-                }
-                activeColor={lighten(0.1, bgColor)}
-              />
-            )}
-          </Mutation>
-        </IntegrationContent>
-      )}
+      <IntegrationContent bgColor={bgColor}>
+        <Mutation mutation={SET_PROFILE_VISIBLE}>
+          {setUserProfileVisible => (
+            <SWRow
+              active={profile.visible}
+              title="Показывать в профиле"
+              onChange={() =>
+                setUserProfileVisible({
+                  variables: { id: profile.id, visible: !profile.visible }
+                })
+              }
+              activeColor={lighten(0.1, bgColor)}
+            />
+          )}
+        </Mutation>
+      </IntegrationContent>
     </IntegrationBox>
   );
 };

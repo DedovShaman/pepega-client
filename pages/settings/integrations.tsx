@@ -6,7 +6,7 @@ import Layout from '../../layouts/Main';
 const SettingsIntegrationsPage = () => (
   <Layout>
     <Settings.Box>
-      <Permission name="USER_SETTINGS_INTEGRATION">
+      <Permission>
         <Settings.Title>Интеграции</Settings.Title>
         <Settings.Content>
           <Integration />

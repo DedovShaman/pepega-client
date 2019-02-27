@@ -1,21 +1,37 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { Query } from 'react-apollo';
-import { profilesToObject } from '../../../utils/profile';
+import styled from 'styled-components';
+import config from '../../../config';
+import ProfileProvider from '../../../providers/Profile';
+import ProfilesProvider from '../../../providers/Profiles';
+import { Button } from '../../../ui/Button';
+import { Icon } from '../../../ui/Icon';
 import Integration from './Integration';
 
+const ConnectBox = styled.div`
+  background: ${({ theme }) => theme.dark2Color};
+  border-radius: 5px;
+  padding: 5px;
+  margin: 10px 0;
+
+  a div {
+    width: 100px;
+    height: 40px;
+    margin: 5px;
+  }
+`;
+
+const SectionTitle = styled.div`
+  padding: 20px 0 0;
+  color: ${({ theme }) => theme.accent2Color};
+  font-size: 14px;
+`;
+
 const GET_USER = gql`
-  query {
-    user {
+  query getUser {
+    user(where: { id: "" }) {
       id
-      profiles {
-        id
-        name
-        avatar
-        serviceName
-        serviceId
-        visible
-      }
     }
   }
 `;
@@ -25,42 +41,45 @@ export default class Integrations extends React.Component {
     return (
       <Query query={GET_USER}>
         {({ loading, error, data }) => {
-          if (loading) {
+          if (loading || error) {
             return null;
           }
-
-          if (error) {
-            return null;
-          }
-
-          const user = data.user;
-          const profiles: any = profilesToObject(user.profiles);
-          const profilesCount = user.profiles.length;
 
           return (
-            <div>
-              <Integration
-                serviceName="google"
-                bgColor="#DB4437"
-                icon="google"
-                denyDisconnect={profilesCount === 1}
-                profile={profiles.google}
-              />
-              <Integration
-                serviceName="vkontakte"
-                bgColor="#507299"
-                icon="vk"
-                denyDisconnect={profilesCount === 1}
-                profile={profiles.vkontakte}
-              />
-              <Integration
-                serviceName="twitch"
-                bgColor="#6542a6"
-                icon="twitch"
-                denyDisconnect={profilesCount === 1}
-                profile={profiles.twitch}
-              />
-            </div>
+            <ProfilesProvider where={{ user: { id: data.user.id } }}>
+              {({ profiles }) => (
+                <div>
+                  <SectionTitle>Подключить новую учетную запись</SectionTitle>
+                  <ConnectBox>
+                    <a href={`${config.apiUrl}auth/connect/google`}>
+                      <Button mainColor="#DB4437">
+                        <Icon type="google" />
+                      </Button>
+                    </a>
+                    <a href={`${config.apiUrl}auth/connect/vkontakte`}>
+                      <Button mainColor="#507299">
+                        <Icon type="vk" />
+                      </Button>
+                    </a>
+                    <a href={`${config.apiUrl}auth/connect/twitch`}>
+                      <Button mainColor="#6542a6">
+                        <Icon type="twitch" />
+                      </Button>
+                    </a>
+                  </ConnectBox>
+                  {profiles.map(({ id }) => (
+                    <ProfileProvider id={id} key={id}>
+                      {({ profile }) => (
+                        <Integration
+                          denyDisconnect={profiles.length === 1}
+                          profile={profile}
+                        />
+                      )}
+                    </ProfileProvider>
+                  ))}
+                </div>
+              )}
+            </ProfilesProvider>
           );
         }}
       </Query>
