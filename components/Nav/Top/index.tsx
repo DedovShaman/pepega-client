@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import Link from 'next/link';
-import { darken, lighten } from 'polished';
+import { darken, lighten, rgba } from 'polished';
 import { FC } from 'react';
 import { Query } from 'react-apollo';
 import styled from 'styled-components';
@@ -148,7 +148,7 @@ const Points = styled.div`
   align-items: center;
   margin: 0 5px;
   font-size: 13px;
-  background: ${({ theme }) => theme.dark2Color};
+  background: ${({ theme }) => rgba(theme.dark2Color, 0.5)};
   padding: 0 10px;
   border-radius: 5px;
   height: 32px;
