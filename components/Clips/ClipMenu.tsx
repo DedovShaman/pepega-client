@@ -10,7 +10,9 @@ import { Icon } from '../../ui/Icon';
 
 const DELETE_CLIP = gql`
   mutation deleteClip($id: ID!) {
-    deleteClip(id: $id)
+    deleteClip(where: { id: $id }) {
+      id
+    }
   }
 `;
 

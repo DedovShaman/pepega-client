@@ -69,24 +69,27 @@ export const Clips: FC<IProps> = ({
   const router = useRouter();
 
   return (
-    <Box style={{ padding: '0 20px' }}>
-      <Query
-        query={GET_CLIPS}
-        fetchPolicy="cache-and-network"
-        variables={{
-          where,
-          orderBy,
-          first: rows ? rows * 6 : limit
-        }}
-      >
-        {({ loading, error, data, fetchMore }) => {
-          if (error || !data || !data.clips) {
-            return null;
-          }
+    <Query
+      query={GET_CLIPS}
+      fetchPolicy="cache-and-network"
+      variables={{
+        where: {
+          deletedAt: null,
+          ...where
+        },
+        orderBy,
+        first: rows ? rows * 6 : limit
+      }}
+    >
+      {({ loading, error, data, fetchMore }) => {
+        if (error || !data || !data.clips) {
+          return null;
+        }
 
-          const clips = data.clips;
+        const clips = data.clips;
 
-          return (
+        return (
+          <Box style={{ padding: '0 20px' }}>
             <InfiniteScroll
               dataLength={clips.length}
               hasMore={!rows && !noMore && !loading}
@@ -164,9 +167,9 @@ export const Clips: FC<IProps> = ({
                 afterRedner={<Divider />}
               />
             </InfiniteScroll>
-          );
-        }}
-      </Query>
-    </Box>
+          </Box>
+        );
+      }}
+    </Query>
   );
 };
