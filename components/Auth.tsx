@@ -64,7 +64,7 @@ const Auth: FC = () => (
         <Icon type="vk" />
       </LoginButton>
       <LoginButton cColor={'#DB4437'} href={`${config.apiUrl}auth/google`}>
-        <Icon type="youtube-play" />
+        <Icon type="google" />
       </LoginButton>
       <LoginButton cColor={'#6542a6'} href={`${config.apiUrl}auth/twitch`}>
         <Icon type="twitch" />
