@@ -35,12 +35,7 @@ const REMOVE_STREAM = gql`
   }
 `;
 
-const BoxAnim = posed.div({
-  closed: { 'padding-bottom': 0 },
-  open: { 'padding-bottom': '56.25%' }
-});
-
-const Box = styled(BoxAnim)`
+const Box = styled.div`
   width: 100%;
   position: relative;
   padding-bottom: 56.25%;
@@ -101,7 +96,7 @@ const Online = styled.div`
 `;
 
 const StreamData = styled.div`
-  padding: 0 10px;
+  /* padding: 0 10px; */
   z-index: 1;
   flex: 1;
   display: flex;
@@ -156,107 +151,44 @@ interface IPropsStreamInfo {
   logo?: string;
   manage?: boolean;
 }
-
-const StreamInfo: FC<IPropsStreamInfo> = ({
-  stream,
-  id,
-  channel,
-  title,
-  logo,
-  manage
-}) => (
-  <StreamLink>
-    {logo && (
-      <Logo>
-        <a href={`https://twitch.tv/${channel}`} target="_blank">
-          <LogoImg src={logo} />
-        </a>
-        {stream.online && <Online />}
-      </Logo>
-    )}
-    <StreamData>
-      <StreamName href={`https://twitch.tv/${channel}`} target="_blank">
-        {title || channel}
-      </StreamName>
-      <StreamCategory href={`https://twitch.tv/${channel}`} target="_blank">
-        {channel}
-      </StreamCategory>
-    </StreamData>
-    {manage && (
-      <StreamManage>
-        <Mutation mutation={REMOVE_STREAM}>
-          {removeStream => (
-            <RemoveStream onClick={() => removeStream({ variables: { id } })}>
-              <Icon type="close" />
-            </RemoveStream>
-          )}
-        </Mutation>
-      </StreamManage>
-    )}
-  </StreamLink>
-);
-
 interface IProps {
-  stream: any;
-  manage: boolean;
+  id: string;
+  channelId: string;
+  name: string;
+  logo: string;
+  title: string;
+  live: boolean;
+  cost: number;
 }
 
-const Stream: FC<IProps> = ({ stream, manage }) => {
-  const channelId = stream.channelId;
-  const channel = stream.channel;
-
-  if (!channelId) {
-    return null;
-  }
-
+const Stream: FC<IProps> = ({ channelId, name, logo, title, cost }) => {
   return (
-    <Query query={GET_STREAM} variables={{ id: channelId }}>
-      {({ loading, error, data }) => {
-        if (loading) {
-          return null;
-        }
-
-        if (error || !data.stream) {
-          return (
-            <StreamInfo
-              id={stream.id}
-              stream={stream}
-              channel={channel}
-              manage={manage}
-            />
-          );
-        }
-
-        const isShowPlayer = true;
-
-        return (
-          <>
-            <Box pose={isShowPlayer ? 'open' : 'closed'}>
-              <StreamBox>
-                {!stream.online && data.stream.channel.video_banner && (
-                  <StreamPreview src={data.stream.channel.video_banner} />
-                )}
-                {process.browser && isShowPlayer && (
-                  <TwitchPlayer muted autoplay channel={channel} />
-                )}
-              </StreamBox>
-              <StreamOverLink
-                href={`https://twitch.tv/${channel}`}
-                target="_blank"
-              />
-            </Box>
-            <StreamInfo
-              channel={channel}
-              title={data.stream.channel.status}
-              logo={data.stream.channel.logo}
-              manage={manage}
-              id={stream.id}
-              stream={stream}
-            />
-          </>
-        );
-      }}
-    </Query>
+    <>
+      <Box>
+        <StreamBox>
+          {process.browser && <TwitchPlayer muted autoplay channel={name} />}
+        </StreamBox>
+        <StreamOverLink href={`https://twitch.tv/${name}`} target="_blank" />
+      </Box>
+      <StreamLink>
+        {logo && (
+          <Logo>
+            <a href={`https://twitch.tv/${name}`} target="_blank">
+              <LogoImg src={logo} />
+            </a>
+            <Online />
+          </Logo>
+        )}
+        <StreamData>
+          <StreamName href={`https://twitch.tv/${name}`} target="_blank">
+            {title || name}
+          </StreamName>
+          <StreamCategory href={`https://twitch.tv/${name}`} target="_blank">
+            {name}
+          </StreamCategory>
+        </StreamData>
+      </StreamLink>
+    </>
   );
 };
 
