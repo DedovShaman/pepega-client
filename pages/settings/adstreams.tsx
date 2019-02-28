@@ -6,7 +6,7 @@ import Layout from '../../layouts/Main';
 const SettingsAdStreamsPage = () => (
   <Layout>
     <Settings.Box>
-      <Permission name="USER_SETTINGS_ADSTREAMS">
+      <Permission>
         <Settings.Title>Продвижение</Settings.Title>
         <Settings.Content>
           <Streams />
