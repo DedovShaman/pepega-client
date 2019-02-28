@@ -121,6 +121,22 @@ const TopLink = styled.a`
   height: 100%;
   text-transform: uppercase;
 
+  span {
+    margin-left: 10px;
+  }
+
+  @media (max-width: 700px) {
+    span {
+      display: none;
+    }
+  }
+
+  i {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+  }
+
   :hover {
     color: ${({ theme }) => lighten(0.6, theme.main1Color)};
   }
@@ -141,6 +157,10 @@ const AvatarBox = styled.div`
 const PointsBox = styled.div`
   display: flex;
   margin: 0 10px;
+
+  @media (max-width: 700px) {
+    display: none;
+  }
 `;
 
 const Points = styled.div`
@@ -152,10 +172,6 @@ const Points = styled.div`
   padding: 0 10px;
   border-radius: 5px;
   height: 32px;
-
-  @media (max-width: 700px) {
-    display: none;
-  }
 `;
 
 const PointsIcon = styled.div`
@@ -264,7 +280,10 @@ const TopNav: FC<IProps> = ({ leftMenuTrigger }) => {
                   }}
                   passHref
                 >
-                  <TopLink>Закинуть клип</TopLink>
+                  <TopLink>
+                    <Icon type="collection-plus" />
+                    <span>Закинуть клип</span>
+                  </TopLink>
                 </Link>
               )}
             </Permission>
