@@ -1,196 +1,155 @@
 import gql from 'graphql-tag';
-import { darken, lighten, rgba } from 'polished';
+import { darken, lighten } from 'polished';
 import { FC } from 'react';
-import { Mutation, Query } from 'react-apollo';
-import posed from 'react-pose';
+import { Mutation } from 'react-apollo';
 import styled from 'styled-components';
+import { Button } from '../../../ui/Button';
 import { Icon } from '../../../ui/Icon';
+import { Input } from '../../../ui/Input';
+import { SWRow } from '../../../ui/SWRow';
 
-interface IProcess {
-  browser: boolean;
-}
+const SET_CHANNEL_SUPPORTER_ACTIVE = gql`
+  mutation setChannelSupporterActive($id: ID!, $active: Boolean!) {
+    setChannelSupporterActive(id: $id, active: $active)
+  }
+`;
 
-declare var process: IProcess;
-
-const GET_STREAM = gql`
-  query stream($id: String!) {
-    stream(id: $id) {
-      game
-      viewers
-      channel {
-        status
-        display_name
-        game
-        logo
-      }
+const DELETE_CHANNEL_SUPPORTER = gql`
+  mutation deleteChannelSupporter($id: ID!) {
+    deleteChannelSupporter(where: { id: $id }) {
+      id
     }
   }
 `;
 
-const REMOVE_STREAM = gql`
-  mutation removeStream($id: ID!) {
-    removeStream(id: $id)
-  }
-`;
-
-const StreamLink = styled.div`
-  display: flex;
-  justify-content: center;
-  min-height: 60px;
-  width: 100%;
-  position: relative;
-  background: ${({ theme }) => lighten(0.05, theme.main1Color)};
-  text-align: left;
-`;
-
-const Logo = styled.div`
-  width: 60px;
-  display: flex;
-  position: relative;
-  justify-content: center;
-  align-items: center;
-  background: ${({ theme }) => theme.main1Color};
-`;
-
-const LogoImg = styled.img`
-  width: 34px;
-  height: 34px;
-`;
-
-const Online = styled.div`
-  position: absolute;
-  height: 12px;
-  width: 12px;
-  background: #ff2c2d;
-  right: 7px;
-  border: 3px solid ${({ theme }) => theme.main1Color};
-  bottom: 7px;
+const PointsIcon = styled.div`
+  height: 10px;
+  width: 10px;
   border-radius: 100%;
-`;
-
-const StreamData = styled.div`
-  padding: 0 10px;
-  z-index: 1;
-  flex: 1;
+  background: transparent;
+  border: 2px solid;
+  margin: 0 10px 0 0;
+  font-size: 10px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  margin: 0 10px;
 `;
 
-const StreamName = styled.a`
-  text-transform: uppercase;
-  font-size: 13px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+const PointsIconReal = styled(PointsIcon)`
+  border-color: #3fa447;
 `;
 
-const StreamCategory = styled.a`
-  text-transform: uppercase;
-  font-size: 11px;
-  color: ${({ theme }) => rgba(theme.text1Color, 0.5)};
-`;
-
-const StreamManage = styled.div`
+const CostBox = styled.div`
   display: flex;
   align-items: center;
 `;
 
-const RemoveStream = styled.div`
-  padding: 0 20px;
-  cursor: pointer;
-  color: ${({ theme }) => lighten(0.3, theme.main1Color)};
+const CostInputBox = styled.div`
+  width: 50px;
 
-  i {
-    font-size: 17px;
-  }
-
-  :hover {
-    color: ${({ theme }) => lighten(0.5, theme.main1Color)};
+  input {
+    text-align: center;
   }
 `;
 
-interface IPropsStreamInfo {
-  stream;
-  id;
-  channel;
-  title?: string;
-  logo?: string;
-}
+const IntegrationBox = styled.div`
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); */
+  /* border-radius: 5px; */
+`;
 
-const StreamInfo: FC<IPropsStreamInfo> = ({
-  stream,
-  id,
-  channel,
-  title,
-  logo
-}) => (
-  <StreamLink>
-    {logo && (
-      <Logo>
-        <a href={`https://twitch.tv/${channel}`} target="_blank">
-          <LogoImg src={logo} />
-        </a>
-        {stream.online && <Online />}
-      </Logo>
-    )}
-    <StreamData>
-      <StreamName href={`https://twitch.tv/${channel}`} target="_blank">
-        {title || channel}
-      </StreamName>
-      <StreamCategory href={`https://twitch.tv/${channel}`} target="_blank">
-        {channel}
-      </StreamCategory>
-    </StreamData>
-    <StreamManage>
-      <Mutation mutation={REMOVE_STREAM}>
-        {removeStream => (
-          <RemoveStream onClick={() => removeStream({ variables: { id } })}>
-            <Icon type="close" />
-          </RemoveStream>
-        )}
-      </Mutation>
-    </StreamManage>
-  </StreamLink>
-);
+const IntegrationHeader = styled('div')`
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  background: ${({ theme }) => lighten(0.1, theme.dark2Color)};
+`;
+
+const IntegrationLogo = styled.div`
+  font-size: 18px;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const IntegrationUsername = styled('div')`
+  font-size: 13px;
+  padding: 0 8px;
+  /* color: ${({ bgColor }) => lighten(0.4, bgColor)}; */
+`;
+
+const IntegrationHeaderActions = styled.div`
+  margin-left: auto;
+`;
+
+const IntegrationContent = styled('div')`
+  padding: 0 20px;
+  border-radius: 0 0 5px 5px;
+`;
 
 interface IProps {
-  stream: any;
+  channelSupporter: any;
 }
 
-const Stream: FC<IProps> = ({ stream }) => {
-  const channelId = stream.channelId;
-  const channel = stream.channel;
-
-  if (!channelId) {
-    return null;
-  }
-
+export const Integration: FC<IProps> = ({ channelSupporter }) => {
   return (
-    <Query query={GET_STREAM} variables={{ id: channelId }}>
-      {({ loading, error, data }) => {
-        if (loading) {
-          return null;
-        }
-
-        if (error || !data.stream) {
-          return (
-            <StreamInfo id={stream.id} stream={stream} channel={channel} />
-          );
-        }
-
-        return (
-          <StreamInfo
-            channel={channel}
-            title={data.stream.channel.status}
-            logo={data.stream.channel.logo}
-            id={stream.id}
-            stream={stream}
-          />
-        );
-      }}
-    </Query>
+    <IntegrationBox>
+      <IntegrationHeader>
+        <IntegrationLogo>
+          <Icon type="twitch" />
+        </IntegrationLogo>
+        <IntegrationUsername>
+          {/* <a href={socialLink} target="_blank"> */}
+          {channelSupporter.channel.name}
+          {/* </a> */}
+        </IntegrationUsername>
+        <IntegrationHeaderActions>
+          <Mutation mutation={DELETE_CHANNEL_SUPPORTER}>
+            {deleteChannelSupporter => (
+              <Button
+                mainColor="#4d517f"
+                onClick={() =>
+                  deleteChannelSupporter({
+                    variables: { id: channelSupporter.id }
+                  })
+                }
+              >
+                Удалить
+              </Button>
+            )}
+          </Mutation>
+        </IntegrationHeaderActions>
+      </IntegrationHeader>
+      <IntegrationContent>
+        <Mutation mutation={SET_CHANNEL_SUPPORTER_ACTIVE}>
+          {setChannelSupporterActive => (
+            <SWRow
+              activeColor={lighten(0.05, '#4d517f')}
+              active={channelSupporter.active}
+              title={
+                <CostBox>
+                  <CostInputBox>
+                    <Input defaultValue="1" maxLength={100} disabled />
+                  </CostInputBox>
+                  <PointsIconReal />в минуту
+                </CostBox>
+              }
+              onChange={() =>
+                setChannelSupporterActive({
+                  variables: {
+                    id: channelSupporter.id,
+                    active: !channelSupporter.active
+                  }
+                })
+              }
+            />
+          )}
+        </Mutation>
+      </IntegrationContent>
+    </IntegrationBox>
   );
 };
 
-export default Stream;
+export default Integration;

@@ -1,16 +1,25 @@
 import gql from 'graphql-tag';
+import { darken, lighten } from 'polished';
 import { createRef, FC } from 'react';
-import { Mutation } from 'react-apollo';
+import { Mutation, Query } from 'react-apollo';
 import styled from 'styled-components';
-import StreamsProvider from '../../../providers/Streams';
+import ChannelSupporterProvider from '../../../providers/ChannelSupporter';
+import ChannelSupportersProvider from '../../../providers/ChannelSupporters';
+import { Button } from '../../../ui/Button';
 import { Input } from '../../../ui/Input';
-import Stream from './Stream';
+import ChannelSupporter from './Stream';
 
-const ADD_STREAM = gql`
-  mutation addStream($channel: String!) {
-    addStream(channel: $channel) {
-      channel
+const GET_USER = gql`
+  query getUser {
+    user(where: { id: "" }) {
+      id
     }
+  }
+`;
+
+const NEW_SUPPORT_CHANNEL = gql`
+  mutation newSupportChannel($channelName: String!) {
+    newSupportChannel(channelName: $channelName)
   }
 `;
 
@@ -20,19 +29,30 @@ const Box = styled.div`
   margin-top: 20px;
   border-radius: 5px;
   overflow: hidden;
+`;
+
+const BlockTitle = styled.div`
+  background: ${({ theme }) => theme.dark2Color};
+  color: ${({ theme }) => lighten(0.5, theme.dark2Color)};
+  padding: 0 20px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+`;
+
+const ChannelsBox = styled.div`
+  /* border-radius: 5px 5px 0 0; */
+  overflow: hidden;
+`;
+
+const ChannelBox = styled.div`
   background: ${({ theme }) => theme.dark2Color};
 `;
 
-const StreamBox = styled.div`
-  margin-bottom: 2px;
-
-  :last-child {
-    margin-bottom: 0;
-  }
-`;
-
 const AddStreamForm = styled.div`
-  margin-top: 2px;
+  background: ${({ theme }) => theme.dark2Color};
+  /* margin-top: 1px; */
   padding: 0 20px;
   height: 60px;
   display: flex;
@@ -43,38 +63,63 @@ const StreamsManage: FC = () => {
   const textInput = createRef<HTMLInputElement>();
 
   return (
-    <Box>
-      <StreamsProvider>
-        {({ streams }) => (
-          <>
-            {streams.map(stream => (
-              <StreamBox key={stream.id}>
-                <Stream stream={stream} />
-              </StreamBox>
-            ))}
-          </>
-        )}
-      </StreamsProvider>
-      <AddStreamForm>
-        <Mutation mutation={ADD_STREAM}>
-          {addStream => (
-            <Input
-              autoFocus
-              ref={textInput}
-              placeholder="Введите название Twitch канала и нажмите Enter"
-              onKeyPress={e => {
-                const channel = textInput.current.value.trim();
+    <Query query={GET_USER}>
+      {({ loading, error, data }) => {
+        if (loading || error) {
+          return null;
+        }
 
-                if (e.key === 'Enter' && channel.length > 0) {
-                  addStream({ variables: { channel } });
-                  textInput.current.value = '';
-                }
-              }}
-            />
-          )}
-        </Mutation>
-      </AddStreamForm>
-    </Box>
+        return (
+          <Box>
+            <ChannelSupportersProvider where={{ user: { id: data.user.id } }}>
+              {({ channelSupporters }) => (
+                <>
+                  <BlockTitle>
+                    Каналы {channelSupporters.length} из 6
+                  </BlockTitle>
+                  <ChannelsBox>
+                    {channelSupporters.map(({ id }) => (
+                      <ChannelBox key={id}>
+                        <ChannelSupporterProvider id={id}>
+                          {({ channelSupporter }) => (
+                            <ChannelSupporter
+                              channelSupporter={channelSupporter}
+                            />
+                          )}
+                        </ChannelSupporterProvider>
+                      </ChannelBox>
+                    ))}
+                  </ChannelsBox>
+                  {channelSupporters.length < 6 && (
+                    <AddStreamForm>
+                      <Mutation mutation={NEW_SUPPORT_CHANNEL}>
+                        {newSupportChannel => (
+                          <Input
+                            autoFocus
+                            ref={textInput}
+                            placeholder="Введите название Twitch канала и нажмите Enter"
+                            onKeyPress={e => {
+                              const channelName = textInput.current.value.trim();
+
+                              if (e.key === 'Enter' && channelName.length > 0) {
+                                newSupportChannel({
+                                  variables: { channelName }
+                                });
+                                textInput.current.value = '';
+                              }
+                            }}
+                          />
+                        )}
+                      </Mutation>
+                    </AddStreamForm>
+                  )}
+                </>
+              )}
+            </ChannelSupportersProvider>
+          </Box>
+        );
+      }}
+    </Query>
   );
 };
 
