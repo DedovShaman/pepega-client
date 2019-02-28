@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { ClipView } from '../components/Clips/ClipView';
-import RightPanel from '../components/Nav/Right';
-import Streams from '../components/Streams/Column';
 import useRouter from '../hooks/useRouter';
 import Layout from '../layouts/Main';
 import ClipProvider from '../providers/Clip';
@@ -37,11 +35,6 @@ const PostPage = () => {
             {({ clip }) => <ClipView {...clip} meta />}
           </ClipProvider>
         </PostBox>
-        <RightPanel.Box>
-          <RightPanel.Block>
-            <Streams />
-          </RightPanel.Block>
-        </RightPanel.Box>
       </Box>
     </Layout>
   );
