@@ -59,11 +59,7 @@ interface IProps {
 }
 
 const Provider: FC<IProps> = ({ where, children, limit }) => (
-  <Query
-    query={GET_COMMENTS}
-    variables={{ where }}
-    fetchPolicy="cache-and-network"
-  >
+  <Query query={GET_COMMENTS} variables={{ where }}>
     {({ subscribeToMore, loading, error, data }) => {
       if (loading || error) {
         return <div />;

@@ -53,7 +53,7 @@ interface IProps {
 const UserProvider: FC<IProps> = ({ children, id = '' }) => (
   <Query query={GET_USER} variables={{ where: { id } }}>
     {({ loading, error, data, subscribeToMore }) => {
-      if (loading || error) {
+      if (loading || error || !data.user) {
         return null;
       }
 
