@@ -71,7 +71,6 @@ export const Clips: FC<IProps> = ({
   return (
     <Query
       query={GET_CLIPS}
-      fetchPolicy="cache-and-network"
       variables={{
         where: {
           deletedAt: null,
