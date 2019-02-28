@@ -119,7 +119,15 @@ function create(initialState) {
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
     link: process.browser ? split(isSubscriptionOperation, wsLink, link) : link,
-    cache: new InMemoryCache().restore(initialState || {})
+    cache: new InMemoryCache().restore(initialState || {}),
+    defaultOptions: {
+      query: {
+        fetchPolicy: 'cache-and-network'
+      },
+      watchQuery: {
+        fetchPolicy: 'cache-and-network'
+      }
+    }
   });
 }
 
