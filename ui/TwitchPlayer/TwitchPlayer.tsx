@@ -53,10 +53,10 @@ export const TwitchPlayer: FC<IProps> = props => {
   const [visible, setVisible] = useState(true);
   const delay = randomInt(15e3, 25e3);
 
-  useInterval(() => {
-    setVisible(false);
-    setVisible(true);
-  }, delay);
+  // useInterval(() => {
+  //   setVisible(false);
+  //   setVisible(true);
+  // }, delay);
 
   if (!visible) {
     return null;
