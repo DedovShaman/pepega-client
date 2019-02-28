@@ -7,7 +7,7 @@ const dayAgo = now('-1d').toISOString();
 
 const IndexPage = () => (
   <Layout>
-    {/* {/* <Streams /> */}
+    <Streams />
     <Clips
       title="Топ за день"
       titleLink="/top/day"
