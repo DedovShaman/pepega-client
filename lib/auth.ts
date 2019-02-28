@@ -1,5 +1,4 @@
 import * as Cookies from 'js-cookie';
-import jwt from 'jsonwebtoken';
 import config from '../config';
 import { gqlQuery } from '../utils/gqlQuery';
 import { promiseTimeout } from '../utils/promiseTimeout';
@@ -28,12 +27,6 @@ export const setTokens = (accessToken: string, refreshToken: string) => {
 export const removeTokens = () => {
   Cookies.remove('accessToken', config.cookieOptions);
   Cookies.remove('refreshToken', config.cookieOptions);
-};
-
-export const accessTokenIsValid = token => {
-  const expUnix = jwt.decode(token).exp * 1000;
-  const nowUnix = new Date().getTime();
-  return expUnix - nowUnix > 0;
 };
 
 class TokenRefresh {
@@ -103,13 +96,7 @@ const refresh = async refreshToken => {
   return '';
 };
 
-export const getAccessTokenAsync = async () => {
-  const accessToken = getAccessToken();
-
-  if (!accessToken || accessTokenIsValid(accessToken)) {
-    return accessToken;
-  }
-
+export const getNewAccessToken = async () => {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken) {

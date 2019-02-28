@@ -1,13 +1,14 @@
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClient } from 'apollo-client';
-import { split } from 'apollo-link';
+import { ApolloLink, Observable, split } from 'apollo-link';
 import { BatchHttpLink } from 'apollo-link-batch-http';
 import { setContext } from 'apollo-link-context';
+import { onError } from 'apollo-link-error';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import fetch from 'isomorphic-unfetch';
 import config from '../config';
-import { getAccessTokenAsync } from './auth';
+import { getAccessToken, getNewAccessToken } from './auth';
 
 let apolloClient = null;
 
@@ -33,8 +34,8 @@ function create(initialState) {
     credentials: 'same-origin'
   });
 
-  const authLink = setContext(async (_, { headers }) => {
-    const accessToken = await getAccessTokenAsync();
+  const authLink = setContext((_, { headers }) => {
+    const accessToken = getAccessToken();
 
     return {
       headers: {
@@ -44,39 +45,80 @@ function create(initialState) {
     };
   });
 
+  const errorLink = onError(
+    ({ graphQLErrors, networkError, operation, forward }) => {
+      if (graphQLErrors) {
+        for (const err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case 'UNAUTHENTICATED':
+              // error code is set to UNAUTHENTICATED
+              // when AuthenticationError thrown in resolver
+              return new Observable(observer => {
+                getNewAccessToken()
+                  .then(accessToken => {
+                    operation.setContext(({ headers = {} }) => ({
+                      headers: {
+                        // Re-add old headers
+                        ...headers,
+                        // Switch out old access token for new one
+                        authorization: accessToken
+                          ? `Bearer ${accessToken}`
+                          : ''
+                      }
+                    }));
+                  })
+                  .then(() => {
+                    const subscriber = {
+                      next: observer.next.bind(observer),
+                      error: observer.error.bind(observer),
+                      complete: observer.complete.bind(observer)
+                    };
+
+                    // Retry last failed request
+                    forward(operation).subscribe(subscriber);
+                  })
+                  .catch(error => {
+                    // No refresh or client token available, we force user to login
+                    observer.error(error);
+                  });
+              });
+          }
+        }
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        // if you would also like to retry automatically on
+        // network errors, we recommend that you use
+        // apollo-link-retry
+      }
+    }
+  );
+
+  const link = ApolloLink.from([authLink, errorLink]).concat(httpLink);
+
   const wsLink = process.browser
     ? new WebSocketLink({
         uri: config.wsgqlUrl,
         options: {
           reconnect: true,
-          connectionParams: async () => {
-            const accessToken = await getAccessTokenAsync();
-
-            return {
-              accessToken
-            };
+          connectionParams: () => {
+            const accessToken = getAccessToken();
+            return { accessToken };
           }
         }
       })
     : null;
 
+  const isSubscriptionOperation = ({ query }) => {
+    const { kind, operation } = getMainDefinition(query);
+    return kind === 'OperationDefinition' && operation === 'subscription';
+  };
+
   // Check out https://github.com/zeit/next.js/pull/4611 if you want to use the AWSAppSyncClient
   return new ApolloClient({
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
-    link: process.browser
-      ? split(
-          ({ query }) => {
-            // @ts-ignore
-            const { kind, operation } = getMainDefinition(query);
-            return (
-              kind === 'OperationDefinition' && operation === 'subscription'
-            );
-          },
-          wsLink,
-          authLink.concat(httpLink)
-        )
-      : authLink.concat(httpLink),
+    link: process.browser ? split(isSubscriptionOperation, wsLink, link) : link,
     cache: new InMemoryCache().restore(initialState || {})
   });
 }
