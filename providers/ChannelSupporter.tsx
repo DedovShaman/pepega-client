@@ -9,8 +9,6 @@ const GET = gql`
       active
       channel {
         id
-        name
-        live
       }
     }
   }
@@ -26,8 +24,6 @@ const UPDATED = gql`
         active
         channel {
           id
-          name
-          live
         }
       }
     }
