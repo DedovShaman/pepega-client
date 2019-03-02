@@ -1,39 +1,13 @@
-import gql from 'graphql-tag';
 import { darken, lighten } from 'polished';
 import { FC } from 'react';
-import { Mutation, Query } from 'react-apollo';
-import posed from 'react-pose';
 import styled from 'styled-components';
-import { Icon } from '../../../ui/Icon';
-import { TwitchPlayer } from '../../../ui/TwitchPlayer';
+import { TwitchPlayer } from '../../ui/TwitchPlayer';
 
 interface IProcess {
   browser: boolean;
 }
 
 declare var process: IProcess;
-
-const GET_STREAM = gql`
-  query stream($id: String!) {
-    stream(id: $id) {
-      game
-      viewers
-      channel {
-        status
-        display_name
-        video_banner
-        game
-        logo
-      }
-    }
-  }
-`;
-
-const REMOVE_STREAM = gql`
-  mutation removeStream($id: ID!) {
-    removeStream(id: $id)
-  }
-`;
 
 const Box = styled.div`
   width: 100%;
@@ -116,41 +90,6 @@ const StreamCategory = styled.a`
   color: ${({ theme }) => darken(0.4, theme.text1Color)};
 `;
 
-const StreamManage = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const RemoveStream = styled.div`
-  padding: 0 20px;
-  cursor: pointer;
-  color: ${({ theme }) => lighten(0.3, theme.main1Color)};
-
-  i {
-    font-size: 17px;
-  }
-
-  :hover {
-    color: ${({ theme }) => lighten(0.5, theme.main1Color)};
-  }
-`;
-
-const StreamPreview = styled.img`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-`;
-
-interface IPropsStreamInfo {
-  stream;
-  id;
-  channel;
-  title?: string;
-  logo?: string;
-  manage?: boolean;
-}
 interface IProps {
   id: string;
   channelId: string;
@@ -161,12 +100,12 @@ interface IProps {
   cost: number;
 }
 
-const Stream: FC<IProps> = ({ channelId, name, logo, title, cost }) => {
+const Stream: FC<IProps> = ({ name, logo, title, cost }) => {
   return (
     <>
       <Box>
         <StreamBox>
-          {process.browser && <TwitchPlayer muted autoplay channel={name} />}
+          {process.browser && <TwitchPlayer muted channel={name} />}
         </StreamBox>
         <StreamOverLink href={`https://twitch.tv/${name}`} target="_blank" />
       </Box>
@@ -184,7 +123,7 @@ const Stream: FC<IProps> = ({ channelId, name, logo, title, cost }) => {
             {title || name}
           </StreamName>
           <StreamCategory href={`https://twitch.tv/${name}`} target="_blank">
-            {name}
+            {name} ({cost})
           </StreamCategory>
         </StreamData>
       </StreamLink>

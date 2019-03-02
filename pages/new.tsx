@@ -1,5 +1,5 @@
 import { Clips } from '../components/Clips/Clips';
-import Streams from '../components/Streams/Grid';
+import Streams from '../components/Streams';
 import Layout from '../layouts/Main';
 
 const NewPage = () => (
