@@ -9,6 +9,8 @@ import { RouterContext } from '../hooks/useRouter';
 import withApollo from '../lib/withApollo';
 import { ThemeProvider } from '../theme';
 
+const fvc = 'https://ravepro.ams3.digitaloceanspaces.com/favicons/twitchru.png';
+
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
@@ -34,10 +36,7 @@ class MyApp extends App<IProps> {
       pageProps = await Component.getInitialProps(ctx);
     }
 
-    return {
-      isServer,
-      pageProps
-    };
+    return { isServer, pageProps };
   }
 
   public render() {
@@ -58,11 +57,7 @@ class MyApp extends App<IProps> {
             >
               <React.Fragment>
                 <Head>
-                  <link
-                    rel="icon"
-                    type="image/png"
-                    href="https://ravepro.ams3.digitaloceanspaces.com/favicons/twitchru.png"
-                  />
+                  <link rel="icon" type="image/png" href={fvc} />
                   <title>TwitchRu</title>
                   <meta property="og:locale" content="ru_RU" />
                   <meta property="og:type" content="website" />
