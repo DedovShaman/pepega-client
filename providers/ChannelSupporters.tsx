@@ -3,9 +3,17 @@ import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
 const GET_CHANNEL_SUPPORTERS = gql`
-  query channelSupporters($where: ChannelSupporterWhereInput) {
-    channelSupporters(where: $where) {
+  query channelSupporters(
+    $where: ChannelSupporterWhereInput
+    $orderBy: ChannelSupporterOrderByInput
+  ) {
+    channelSupporters(where: $where, orderBy: $orderBy) {
       id
+      channel {
+        id
+        cost
+        live
+      }
     }
   }
 `;
@@ -21,6 +29,10 @@ const CHANNEL_SUPPORTER_SUB = gql`
       }
       node {
         id
+        channel {
+          id
+          cost
+        }
       }
     }
   }
@@ -46,12 +58,13 @@ class Inner extends Component<IPropsInner> {
 
 interface IProps {
   where: any;
+  orderBy?: string;
   limit?: number;
   children: any;
 }
 
-const Provider: FC<IProps> = ({ where, children, limit }) => (
-  <Query query={GET_CHANNEL_SUPPORTERS} variables={{ where }}>
+const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
+  <Query query={GET_CHANNEL_SUPPORTERS} variables={{ where, orderBy }}>
     {({ subscribeToMore, loading, error, data }) => {
       if (loading || error) {
         return <div />;
