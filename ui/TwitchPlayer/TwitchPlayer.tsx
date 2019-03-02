@@ -1,22 +1,19 @@
-import { FC, useEffect, useState } from 'react';
-
-import useInterval from '../../hooks/useInterval';
-import { randomInt } from '../../utils/random';
+import { FC, memo, useEffect } from 'react';
 import { getSDK } from './getSDK';
 
 interface IProps {
-  autoplay: boolean;
   muted: boolean;
   channel: string;
 }
-
-export const TwitchPlayerInner: FC<IProps> = ({ muted, channel }) => {
-  const playerID = `twstream-${channel}`;
+export const TwitchPlayer: FC<IProps> = memo(({ muted, channel }) => {
+  const playerId = `adplayer-${channel}`;
   let player;
+
+  console.log('render', playerId, muted, channel);
 
   useEffect(() => {
     getSDK().then(Twitch => {
-      player = new Twitch.Player(playerID, {
+      player = new Twitch.Player(playerId, {
         channel,
         height: '100%',
         width: '100%',
@@ -44,23 +41,7 @@ export const TwitchPlayerInner: FC<IProps> = ({ muted, channel }) => {
         width: '100%',
         height: '100%'
       }}
-      id={playerID}
+      id={playerId}
     />
   );
-};
-
-export const TwitchPlayer: FC<IProps> = props => {
-  const [visible, setVisible] = useState(true);
-  const delay = randomInt(15e3, 25e3);
-
-  // useInterval(() => {
-  //   setVisible(false);
-  //   setVisible(true);
-  // }, delay);
-
-  if (!visible) {
-    return null;
-  }
-
-  return <TwitchPlayerInner {...props} />;
-};
+});
