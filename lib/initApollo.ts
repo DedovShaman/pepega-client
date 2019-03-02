@@ -104,6 +104,11 @@ function create(initialState) {
           connectionParams: () => {
             const accessToken = getAccessToken();
             return { accessToken };
+          },
+          connectionCallback: err => {
+            if (err) {
+              console.log('Error Connecting to Subscriptions Server', err);
+            }
           }
         }
       })
