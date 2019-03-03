@@ -3,7 +3,7 @@ import Head from 'next/head';
 import * as React from 'react';
 import { Query } from 'react-apollo';
 import { Clips } from '../components/Clips/Clips';
-import Streams from '../components/Streams/Grid';
+import Streams from '../components/Streams';
 import UserPanelProfile from '../components/User/UserPanelProfile';
 import useRouter from '../hooks/useRouter';
 import Layout from '../layouts/Main';

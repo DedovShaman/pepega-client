@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Clips } from '../components/Clips/Clips';
-import Streams from '../components/Streams/Grid';
+import Streams from '../components/Streams';
 import Layout from '../layouts/Main';
 
 const GET_USER = gql`
@@ -26,7 +26,7 @@ const LikesPage = () => (
 
         return (
           <>
-            {/* <Streams /> */}
+            <Streams />
             <Clips
               title="Понравившиеся"
               where={{
