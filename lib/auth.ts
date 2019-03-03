@@ -88,6 +88,7 @@ const refresh = async refreshToken => {
 
   if (refreshData) {
     setTokens(refreshData.accessToken, refreshData.refreshToken);
+    console.log('refresh tokens: success', refreshData.refreshToken);
     return refreshData.accessToken;
   }
 

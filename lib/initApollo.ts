@@ -108,6 +108,7 @@ function create(initialState) {
           connectionCallback: err => {
             if (err) {
               console.log('Error Connecting to Subscriptions Server', err);
+              getNewAccessToken().then();
             }
           }
         }
