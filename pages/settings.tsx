@@ -5,7 +5,7 @@ import Layout from '../layouts/Main';
 const SettingsPage = () => (
   <Layout>
     <Settings.Box>
-      <Permission name="USER_SETTINGS">
+      <Permission>
         <Settings.Title>Учетная запись</Settings.Title>
         <Settings.Content />
       </Permission>
