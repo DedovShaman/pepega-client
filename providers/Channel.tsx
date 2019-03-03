@@ -65,8 +65,6 @@ const Provider: FC<IProps> = ({ children, id = '' }) => (
               document: UPDATED,
               variables: { where: subWhere },
               updateQuery: (prev, { subscriptionData }) => {
-                console.log(subscriptionData);
-
                 if (!subscriptionData.data) {
                   return prev;
                 }
