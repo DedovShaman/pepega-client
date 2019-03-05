@@ -41,7 +41,7 @@ const CommentsBox = styled.div`
   flex: 1;
   position: relative;
   background: ${({ theme }) => theme.dark2Color};
-  border-top: 1px solid #1e1d22;
+  border-top: 1px solid ${({ theme }) => theme.dark1Color};
   border-radius: 0 0 5px 5px;
   overflow: hidden;
 `;
