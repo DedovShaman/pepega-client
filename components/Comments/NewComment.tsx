@@ -6,8 +6,8 @@ import { Permission } from '../../helpers/Permission';
 import { convertTextToEmojiCode } from '../../utils/emoji';
 
 const NEW_COMMENT = gql`
-  mutation newComment($data: NewCommentInput!) {
-    newComment(data: $data) {
+  mutation createComment($data: CommentCreateInput!) {
+    createComment(data: $data) {
       id
     }
   }
@@ -60,14 +60,14 @@ export default class extends React.Component<IProps> {
             return (
               <Mutation
                 mutation={NEW_COMMENT}
-                onCompleted={({ newComment }) => {
-                  if (newComment) {
+                onCompleted={({ createComment }) => {
+                  if (createComment) {
                     this.textInput.value = '';
                     this.lock = false;
                   }
                 }}
               >
-                {newComment => (
+                {createComment => (
                   <>
                     <input
                       ref={input => {
@@ -87,8 +87,17 @@ export default class extends React.Component<IProps> {
                           content.length > 0
                         ) {
                           this.lock = true;
-                          newComment({
-                            variables: { data: { clipId, content } }
+                          createComment({
+                            variables: {
+                              data: {
+                                content,
+                                clip: {
+                                  connect: {
+                                    id: clipId
+                                  }
+                                }
+                              }
+                            }
                           });
                         }
                       }}
