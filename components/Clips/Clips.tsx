@@ -94,7 +94,6 @@ export const Clips: FC<IProps> = ({
               hasMore={!rows && !noMore && !loading}
               scrollableTarget="mainScroll"
               next={() => {
-                console.log('next');
                 fetchMore({
                   variables: {
                     where,

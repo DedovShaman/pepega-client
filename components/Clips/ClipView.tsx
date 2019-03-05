@@ -1,10 +1,9 @@
 import Head from 'next/head';
-import { darken, lighten } from 'polished';
+import { darken } from 'polished';
 import { FC } from 'react';
 import styled from 'styled-components';
 import { ClipReactionType, IClip } from '../../interfaces/Clip';
 import ClipReactionProvider from '../../providers/ClipCurrentReaction';
-import { Icon } from '../../ui/Icon';
 import { TwitchClipPlayer } from '../../ui/TwitchClipPlayer';
 import Comments from '../Comments/Comments';
 import { ClipAuthor } from './ClipAuthor';
@@ -21,30 +20,6 @@ const Box = styled.div`
   overflow: hidden;
 `;
 
-const Top = styled.div`
-  display: flex;
-  height: 50px;
-  align-items: center;
-`;
-
-const Title = styled.div`
-  height: 100%;
-  padding: 0 20px;
-  font-size: 15px;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  flex: 1;
-
-  span {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-right: 10px;
-    display: inline;
-  }
-`;
-
 const ContentBox = styled.div`
   background: ${({ theme }) => darken(0.1, theme.dark1Color)};
 `;
@@ -53,25 +28,6 @@ const EmptyBottom = styled.div`
   height: 100%;
   display: flex;
   flex: 1;
-`;
-
-const ChannelLink = styled.a`
-  display: flex;
-  height: 100%;
-  align-items: center;
-  font-size: 13px;
-  background: ${({ theme }) => darken(0.1, theme.main1Color)};
-  color: ${({ theme }) => lighten(0.3, theme.main1Color)};
-  padding: 0 18px;
-
-  i {
-    font-size: 17px;
-    margin-right: 12px;
-  }
-`;
-
-const ChannelName = styled.div`
-  color: ${({ theme }) => lighten(0.45, theme.main1Color)};
 `;
 
 const Bottom = styled.div`
@@ -102,7 +58,6 @@ export const ClipView: FC<IProps> = ({
   likes,
   dislikes,
   clipId,
-  channel,
   createdAt,
   author,
   meta,
@@ -124,20 +79,6 @@ export const ClipView: FC<IProps> = ({
           </>
         )}
       </Head>
-      <Top>
-        <Title>
-          <span>{title && title}</span>
-        </Title>
-        {channel && channel.name && (
-          <ChannelLink
-            href={`https://twitch.tv/${channel.name}`}
-            target="_blank"
-          >
-            <Icon type="twitch" />
-            <ChannelName>{channel.name}</ChannelName>
-          </ChannelLink>
-        )}
-      </Top>
       <ContentBox>
         <TwitchClipPlayer sourceId={clipId} autoPlay={autoPlay} />
       </ContentBox>

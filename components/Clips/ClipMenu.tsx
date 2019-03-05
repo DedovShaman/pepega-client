@@ -53,7 +53,7 @@ export const ClipMenu: FC<IProps> = ({ id }) => (
     <Dropdown
       overlay={
         <UserMenu>
-          <Permission name="DELETE_CLIP" contextId={id}>
+          <Permission name="DELETE_CLIP">
             <Mutation mutation={DELETE_CLIP}>
               {deleteClip => (
                 <UserMenuItem onClick={() => deleteClip({ variables: { id } })}>
