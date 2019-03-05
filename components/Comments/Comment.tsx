@@ -81,7 +81,7 @@ const Header = styled.div`
 `;
 
 const Username = styled('div')<{ userColor?: string }>`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: ${props =>
     props.userColor
@@ -91,7 +91,7 @@ const Username = styled('div')<{ userColor?: string }>`
 
 const Date = styled.div`
   color: ${props => darken(0.15, props.theme.accent2Color)};
-  font-size: 11.5px;
+  font-size: 11px;
   padding: 0 8px;
 `;
 
@@ -159,7 +159,7 @@ export const Comment: FC<IProps> = ({
   <Query query={GET_USER} variables={{ where: { id: author.id } }}>
     {({ loading, error, data }) => {
       if (loading) {
-        return <div />;
+        return null;
       }
 
       if (error || !data.user) {
