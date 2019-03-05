@@ -1,5 +1,4 @@
 import { Clips } from '../components/Clips/Clips';
-import Streams from '../components/Streams';
 import Layout from '../layouts/Main';
 import { now } from '../utils/now';
 
@@ -8,8 +7,7 @@ const weekAgo = now('-14d').toISOString();
 const monthAgo = now('-30d').toISOString();
 
 const TopPage = () => (
-  <Layout>
-    <Streams />
+  <Layout streams>
     <Clips
       title="Топ за день"
       titleLink="/top/day"

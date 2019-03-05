@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Clips } from '../components/Clips/Clips';
-import Streams from '../components/Streams';
 import Layout from '../layouts/Main';
 
 const GET_USER = gql`
@@ -13,7 +12,7 @@ const GET_USER = gql`
 `;
 
 const LikesPage = () => (
-  <Layout>
+  <Layout streams>
     <Query query={GET_USER}>
       {({ loading, error, data }) => {
         if (loading || error) {
@@ -25,15 +24,12 @@ const LikesPage = () => (
         }
 
         return (
-          <>
-            <Streams />
-            <Clips
-              title="Понравившиеся"
-              where={{
-                reactions_some: { type: 'LIKE', user: { id: data.user.id } }
-              }}
-            />
-          </>
+          <Clips
+            title="Понравившиеся"
+            where={{
+              reactions_some: { type: 'LIKE', user: { id: data.user.id } }
+            }}
+          />
         );
       }}
     </Query>

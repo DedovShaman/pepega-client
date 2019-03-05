@@ -1,13 +1,11 @@
 import { Clips } from '../../components/Clips/Clips';
-import Streams from '../../components/Streams';
 import Layout from '../../layouts/Main';
 import { now } from '../../utils/now';
 
 const monthAgo = now('-30d').toISOString();
 
 const TopMonthPage = () => (
-  <Layout>
-    <Streams />
+  <Layout streams>
     <Clips
       title="Топ за месяц"
       titleLink="/top/month"

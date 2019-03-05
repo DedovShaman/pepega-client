@@ -6,7 +6,7 @@ const SettingsPage = () => (
   <Layout>
     <Settings.Box>
       <Permission>
-        <Settings.Title>Учетная запись</Settings.Title>
+        <Settings.Title>Настройки</Settings.Title>
         <Settings.Content />
       </Permission>
     </Settings.Box>

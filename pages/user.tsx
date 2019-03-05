@@ -3,7 +3,6 @@ import Head from 'next/head';
 import * as React from 'react';
 import { Query } from 'react-apollo';
 import { Clips } from '../components/Clips/Clips';
-import Streams from '../components/Streams';
 import UserPanelProfile from '../components/User/UserPanelProfile';
 import useRouter from '../hooks/useRouter';
 import Layout from '../layouts/Main';
@@ -68,6 +67,7 @@ const UserPage = () => {
 
         return (
           <Layout
+            streams
             fixedTopContent={
               <UserPanelProfile user={user} clipsCount={data.clipsCount} />
             }
@@ -76,9 +76,7 @@ const UserPage = () => {
               <Head>
                 <title>{user.name}</title>
               </Head>
-
               <PostsBox>
-                <Streams />
                 <Clips
                   title="Клипы"
                   where={{ deletedAt: null, author: { id: user.id } }}

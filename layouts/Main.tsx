@@ -3,9 +3,9 @@ import { FC, ReactNode, useState } from 'react';
 import Scrollbars from 'react-custom-scrollbars';
 import { YMInitializer } from 'react-yandex-metrika';
 import styled from 'styled-components';
-
 import { ClipView } from '../components/Clips/ClipView';
 import TopNav from '../components/Nav/Top';
+import Streams from '../components/Streams';
 import { Permission } from '../helpers/Permission';
 import useRouter from '../hooks/useRouter';
 import CategoriesProvider from '../providers/Categories';
@@ -89,9 +89,10 @@ const Overlay = styled.div<{ leftMenuIsOpen: boolean }>`
 
 interface IProps {
   fixedTopContent?: ReactNode;
+  streams?: boolean;
 }
 
-const MainLayout: FC<IProps> = ({ children, fixedTopContent }) => {
+const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
   const router = useRouter();
   const [leftMenuIsOpen, setLeftMenuIsOpen] = useState(false);
 
@@ -232,6 +233,7 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent }) => {
                 autoHide
                 universal
               >
+                {streams && <Streams />}
                 {children}
               </Scrollbars>
             </PostsBox>
