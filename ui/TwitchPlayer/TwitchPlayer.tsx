@@ -9,8 +9,6 @@ export const TwitchPlayer: FC<IProps> = memo(({ muted, channel }) => {
   const playerId = `adplayer-${channel}`;
   let player;
 
-  console.log('render', playerId, muted, channel);
-
   useEffect(() => {
     getSDK().then(Twitch => {
       player = new Twitch.Player(playerId, {
@@ -35,13 +33,5 @@ export const TwitchPlayer: FC<IProps> = memo(({ muted, channel }) => {
     });
   }, []);
 
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%'
-      }}
-      id={playerId}
-    />
-  );
+  return <div style={{ width: '100%', height: '100%' }} id={playerId} />;
 });
