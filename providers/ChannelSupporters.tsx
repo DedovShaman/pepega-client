@@ -32,6 +32,7 @@ const CHANNEL_SUPPORTER_SUB = gql`
         channel {
           id
           cost
+          live
         }
       }
     }
@@ -66,9 +67,13 @@ interface IProps {
 const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
   <Query query={GET_CHANNEL_SUPPORTERS} variables={{ where, orderBy }}>
     {({ subscribeToMore, loading, error, data }) => {
-      if (loading || error) {
-        return <div />;
+      if (loading || error || !data || !data.channelSupporters) {
+        return null;
       }
+
+      const subVariables: any = {
+        where: { node: where }
+      };
 
       return (
         <Inner
@@ -76,9 +81,7 @@ const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
           subscribeNew={() => {
             subscribeToMore({
               document: CHANNEL_SUPPORTER_SUB,
-              variables: {
-                where: { node: where }
-              },
+              variables: subVariables,
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) {
                   return prev;
@@ -104,6 +107,7 @@ const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
                         ]
                       };
                     }
+                    break;
                   case 'DELETED':
                     return {
                       ...prev,
