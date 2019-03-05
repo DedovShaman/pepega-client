@@ -1,5 +1,5 @@
 import { Clips } from '../../components/Clips/Clips';
-// import Streams from '../../components/Streams/Grid';
+import Streams from '../../components/Streams';
 import Layout from '../../layouts/Main';
 import { now } from '../../utils/now';
 
@@ -7,7 +7,7 @@ const weekAgo = now('-14d').toISOString();
 
 const TopWeekPage = () => (
   <Layout>
-    {/* <Streams /> */}
+    <Streams />
     <Clips
       title="Топ за неделю"
       titleLink="/top/week"

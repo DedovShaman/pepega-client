@@ -1,10 +1,10 @@
 import { Clips } from '../../components/Clips/Clips';
-import Streams from '../../components/Streams/Grid';
+import Streams from '../../components/Streams';
 import Layout from '../../layouts/Main';
 
 const TopAllPage = () => (
   <Layout>
-    {/* <Streams /> */}
+    <Streams />
     <Clips
       title="Топ за все время"
       titleLink="/top/all"

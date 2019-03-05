@@ -9,7 +9,7 @@ const monthAgo = now('-30d').toISOString();
 
 const TopPage = () => (
   <Layout>
-    {/* <Streams /> */}
+    <Streams />
     <Clips
       title="Топ за день"
       titleLink="/top/day"
