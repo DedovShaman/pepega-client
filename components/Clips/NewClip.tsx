@@ -28,8 +28,8 @@ const GET_TWITCH_CLIP = gql`
 `;
 
 const CREATE_CLIP = gql`
-  mutation newClip($data: NewClipInput!) {
-    newClip(data: $data) {
+  mutation createClip($data: ClipCreateInput!) {
+    createClip(data: $data) {
       id
     }
   }
@@ -80,10 +80,10 @@ export const NewClip: FC = () => {
     <Mutation
       mutation={CREATE_CLIP}
       onCompleted={data => {
-        Router.push(`/clip?id=${data.newClip.id}`);
+        Router.push(`/clip?id=${data.createClip.id}`);
       }}
     >
-      {newClip => (
+      {createClip => (
         <Box>
           <Input
             autoFocus
@@ -176,11 +176,11 @@ export const NewClip: FC = () => {
                   <Bottom>
                     <Button
                       onClick={() =>
-                        newClip({
+                        createClip({
                           variables: {
                             data: {
                               title,
-                              twitchClipSlug: data.twitchClip.slug,
+                              clipId: data.twitchClip.slug,
                               nfws,
                               spoiler
                             }
