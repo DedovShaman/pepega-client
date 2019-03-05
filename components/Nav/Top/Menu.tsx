@@ -3,7 +3,6 @@ import { darken } from 'polished';
 import * as React from 'react';
 import styled from 'styled-components';
 import config from '../../../config';
-import { Permission } from '../../../helpers/Permission';
 import { Dropdown } from '../../../ui/Dropdown';
 
 const Box = styled.div`
@@ -47,11 +46,6 @@ export default class PostMenu extends React.Component<IProps> {
         <Link href={`/user?id=${user.id}`} passHref>
           <UserMenuItem>Профиль</UserMenuItem>
         </Link>
-        <Permission>
-          <Link href="/manage" passHref>
-            <UserMenuItem>Панель управления</UserMenuItem>
-          </Link>
-        </Permission>
         <Link href={`${config.apiUrl}logout`} passHref>
           <UserMenuItem>Выход</UserMenuItem>
         </Link>
