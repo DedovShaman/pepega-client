@@ -49,15 +49,17 @@ interface IProps {
 const Comments: FC<IProps> = ({ clipId }) => (
   <Box>
     <CommentsBox>
-      <CommentsProvider where={{ clip: { id: clipId } }}>
-        {({ comments }) => (
-          <>
-            {compactMessages(comments).map(comment => (
-              <Comment key={comment.id} {...comment} />
-            ))}
-          </>
-        )}
-      </CommentsProvider>
+      {clipId && (
+        <CommentsProvider where={{ clip: { id: clipId } }}>
+          {({ comments }) => (
+            <>
+              {compactMessages(comments).map(comment => (
+                <Comment key={comment.id} {...comment} />
+              ))}
+            </>
+          )}
+        </CommentsProvider>
+      )}
     </CommentsBox>
     <NewComment clipId={clipId} />
   </Box>

@@ -128,7 +128,7 @@ export const ClipGridView: FC<IProps> = ({ clip, onPlay }) => {
             <IconBox>
               <Icon type={clip && clip.score < 0 ? 'thumb-down' : 'thumb-up'} />
             </IconBox>
-            {shortNumbers(clip ? clip.score : 0)}
+            {shortNumbers(clip && clip.score ? clip.score : 0)}
           </Rating>
         </BottomRight>
       </Bottom>

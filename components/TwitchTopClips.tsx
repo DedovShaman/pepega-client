@@ -1,15 +1,12 @@
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import ruLocale from 'date-fns/locale/ru';
 import gql from 'graphql-tag';
-import { omit } from 'lodash';
 import { darken } from 'polished';
 import { FC } from 'react';
 import { Query } from 'react-apollo';
 import styled from 'styled-components';
 import useRouter from '../hooks/useRouter';
 import { Grid } from '../ui/Grid';
-import { Modal } from '../ui/Modal';
-import { TwitchClipPlayer } from '../ui/TwitchClipPlayer';
 import { VideoPreview } from '../ui/VideoPreview';
 import { humanNumbers } from '../utils/count';
 
@@ -106,72 +103,28 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
             return null;
           }
 
-          const curretClipIndex = data.twitchTopClips.findIndex(({ id }) => {
-            return router.query.clip === id;
-          });
-
           const openClip = (clipId: string) => {
             router.push(
               {
                 pathname: router.route,
                 query: {
-                  ...router.query,
-                  clip: clipId
+                  clipId,
+                  backPath: router.asPath,
+                  ...router.query
                 }
               },
               {
-                pathname: router.route,
-                query: {
-                  ...router.query,
-                  clip: clipId
-                }
+                pathname: '/clip',
+                query: { id: clipId }
               },
-              { shallow: true }
+              {
+                shallow: true
+              }
             );
           };
 
-          const clipsCount = data.twitchTopClips.length;
-
-          const goPrev = () =>
-            openClip(data.twitchTopClips[curretClipIndex - 1].id);
-
-          const goNext = () =>
-            openClip(data.twitchTopClips[curretClipIndex + 1].id);
-
-          const sourceId = router.query.clip
-            ? router.query.clip.toString()
-            : null;
-
           return (
             <>
-              <Modal
-                visible={!!router.query.clip}
-                minimal
-                onLeftClick={curretClipIndex > 0 && goPrev}
-                onRightClick={curretClipIndex < clipsCount - 1 && goNext}
-                onClose={() => {
-                  router.push(
-                    {
-                      pathname: router.route,
-                      query: {
-                        ...omit(router.query, 'clip')
-                      }
-                    },
-                    {
-                      pathname: router.route,
-                      query: {
-                        ...omit(router.query, 'clip')
-                      }
-                    },
-                    { shallow: true }
-                  );
-                }}
-              >
-                <div style={{ width: 1100 }}>
-                  <TwitchClipPlayer sourceId={sourceId} autoPlay />
-                </div>
-              </Modal>
-
               <Grid
                 items={data.twitchTopClips}
                 itemRender={clip => (

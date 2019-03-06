@@ -143,14 +143,14 @@ export const Clips: FC<IProps> = ({
                               {
                                 pathname: router.route,
                                 query: {
-                                  clipId: id,
+                                  clipId: clip.clipId,
                                   backPath: router.asPath,
                                   ...router.query
                                 }
                               },
                               {
                                 pathname: '/clip',
-                                query: { id }
+                                query: { id: clip.clipId }
                               },
                               {
                                 shallow: true

@@ -72,7 +72,7 @@ export const ClipProvider: FC<IProps> = ({ children, where, noRealtime }) => (
   <Query query={GET_CLIP} variables={{ where }}>
     {({ subscribeToMore, loading, error, data }) => {
       if (loading || error || !data || !data.clip) {
-        return children({ clip: null });
+        return children({ clip: { clipId: where.clipId } });
       }
 
       const clip = data.clip;
