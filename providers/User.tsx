@@ -3,15 +3,12 @@ import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
 const GET_USER = gql`
-  query getUser($where: UserWhereUniqueInput!) {
-    user(where: $where) {
+  query getUser($id: ID) {
+    user(id: $id) {
       id
       name
       avatar
       banned
-      wallets(orderBy: currency_ASC) {
-        id
-      }
     }
   }
 `;
@@ -51,7 +48,7 @@ interface IProps {
 }
 
 const UserProvider: FC<IProps> = ({ children, id = '' }) => (
-  <Query query={GET_USER} variables={{ where: { id } }}>
+  <Query query={GET_USER} variables={{ id }}>
     {({ loading, error, data, subscribeToMore }) => {
       if (loading || error || !data.user) {
         return null;

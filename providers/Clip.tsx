@@ -3,26 +3,19 @@ import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
 export const GET_CLIP = gql`
-  query getClip($where: ClipWhereUniqueInput!) {
-    clip(where: $where) {
+  query getClip($id: String!) {
+    clip(id: $id) {
       id
       title
       nfws
       spoiler
-      clipId
-      cover
+      thumbnail
       likes
       dislikes
       score
+      channelId
+      channelName
       createdAt
-      channel {
-        id
-        name
-      }
-      author {
-        id
-        name
-      }
     }
   }
 `;
@@ -34,11 +27,13 @@ const CLIP_UPDATED = gql`
         title
         nfws
         spoiler
-        clipId
-        cover
+        thumbnail
         likes
         dislikes
         score
+        channelId
+        channelName
+        createdAt
       }
     }
   }
@@ -63,50 +58,50 @@ class ClipProviderInner extends Component<IPropsInner> {
 }
 
 interface IProps {
-  where?: any;
+  id?: string;
   noRealtime?: boolean;
   children: any;
 }
 
-export const ClipProvider: FC<IProps> = ({ children, where, noRealtime }) => (
-  <Query query={GET_CLIP} variables={{ where }}>
+export const ClipProvider: FC<IProps> = ({ children, id, noRealtime }) => (
+  <Query query={GET_CLIP} variables={{ id }}>
     {({ subscribeToMore, loading, error, data }) => {
       if (loading || error || !data || !data.clip) {
-        return children({ clip: { clipId: where.clipId } });
+        return children({ clip: { id } });
       }
 
       const clip = data.clip;
 
-      if (noRealtime) {
-        return children({ clip });
-      }
+      // if (noRealtime) {
+      return children({ clip });
+      // }
 
-      return (
-        <ClipProviderInner
-          clip={clip}
-          clipUpdated={() => {
-            subscribeToMore({
-              document: CLIP_UPDATED,
-              variables: { where: { node: where } },
-              updateQuery: (prev, { subscriptionData }) => {
-                if (!subscriptionData.data) {
-                  return prev;
-                }
+      // return (
+      //   <ClipProviderInner
+      //     clip={clip}
+      //     clipUpdated={() => {
+      //       subscribeToMore({
+      //         document: CLIP_UPDATED,
+      //         variables: { where: { node: where } },
+      //         updateQuery: (prev, { subscriptionData }) => {
+      //           if (!subscriptionData.data) {
+      //             return prev;
+      //           }
 
-                return {
-                  ...prev,
-                  clip: {
-                    ...prev.clip,
-                    ...subscriptionData.data.clip.node
-                  }
-                };
-              }
-            });
-          }}
-        >
-          {children}
-        </ClipProviderInner>
-      );
+      //           return {
+      //             ...prev,
+      //             clip: {
+      //               ...prev.clip,
+      //               ...subscriptionData.data.clip.node
+      //             }
+      //           };
+      //         }
+      //       });
+      //     }}
+      //   >
+      //     {children}
+      //   </ClipProviderInner>
+      // );
     }}
   </Query>
 );

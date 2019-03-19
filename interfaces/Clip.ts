@@ -9,14 +9,14 @@ export interface IClip {
   title?: string;
   nfws?: boolean;
   spoiler?: boolean;
-  clipId?: string;
-  cover?: string;
+  thumbnail?: string;
   liked?: boolean;
   likes?: number;
   dislikes?: number;
   score?: number;
   createdAt?: string;
-  channel?: any;
+  channelId?: string;
+  channelName?: string;
   reaction?: ClipReactionType;
-  author?: any;
+  authorId?: string;
 }
