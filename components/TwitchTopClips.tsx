@@ -1,14 +1,10 @@
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
-import ruLocale from 'date-fns/locale/ru';
 import gql from 'graphql-tag';
-import { darken } from 'polished';
 import { FC } from 'react';
 import { Query } from 'react-apollo';
 import styled from 'styled-components';
 import useRouter from '../hooks/useRouter';
 import { Grid } from '../ui/Grid';
-import { VideoPreview } from '../ui/VideoPreview';
-import { humanNumbers } from '../utils/count';
+import { ClipGridView } from './Clips/ClipGridView';
 
 const GET_TWITCH_CHANNEL_TOP_CLIPS = gql`
   query twitchTopClips($channel: String, $game: String, $limit: Int) {
@@ -33,52 +29,10 @@ const Box = styled.div`
   padding: 10px 20px;
 `;
 
-const Clip = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 10px 5px;
-  align-items: center;
-`;
-
-const ClipPreview = styled.div`
-  position: relative;
-  padding-bottom: 56.25%;
-  width: 100%;
-  background: ${({ theme }) => theme.dark2Color};
-`;
-
-const ClipPreviewContent = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-`;
-
-const ClipBottom = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-size: 11.5px;
-  color: ${({ theme }) => darken(0.4, theme.text1Color)};
-  width: 100%;
-  line-height: 16px;
-  padding: 4px 8px 4px 0;
-`;
-
-const ClipTitle = styled.div`
-  font-size: 13.5px;
+const ClipContainer = styled.div`
+  margin: 5px;
+  border-radius: 4px;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  color: ${({ theme }) => theme.text1Color};
-`;
-
-const ClipAuthor = styled.a`
-  display: flex;
 `;
 
 interface IProps {
@@ -103,19 +57,19 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
             return null;
           }
 
-          const openClip = (clipId: string) => {
+          const openClip = (id: string) => {
             router.push(
               {
                 pathname: router.route,
                 query: {
-                  clipId,
+                  clipId: id,
                   backPath: router.asPath,
                   ...router.query
                 }
               },
               {
                 pathname: '/clip',
-                query: { id: clipId }
+                query: { id }
               },
               {
                 shallow: true
@@ -124,53 +78,29 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
           };
 
           return (
-            <>
-              <Grid
-                items={data.twitchTopClips}
-                itemRender={clip => (
-                  <Clip key={clip.id}>
-                    <ClipPreview>
-                      <ClipPreviewContent>
-                        <VideoPreview
-                          key={clip.id}
-                          onClick={() => openClip(clip.id)}
-                          cover={clip.thumbnails.small}
-                          date={
-                            distanceInWordsToNow(+new Date(clip.createdAt), {
-                              locale: ruLocale
-                            }) + ' назад'
-                          }
-                          views={humanNumbers(clip.viewsCount)}
-                        />
-                      </ClipPreviewContent>
-                    </ClipPreview>
-                    <ClipBottom>
-                      <ClipTitle
-                        onClick={() => openClip(clip.id)}
-                        title={clip.title}
-                      >
-                        {clip.title}
-                      </ClipTitle>
-                      <ClipAuthor
-                        target="_blank"
-                        href={`https://www.twitch.tv/${clip.channel}`}
-                      >
-                        {clip.channel}
-                      </ClipAuthor>
-                    </ClipBottom>
-                  </Clip>
-                )}
-                elementWidth={280}
-                afterRedner={
-                  <>
-                    {data.twitchTopClips.length === 0 && (
-                      <div>Клипы не найдены</div>
-                    )}
-                    {loading && <div>Загрузка...</div>}
-                  </>
-                }
-              />
-            </>
+            <Grid
+              items={data.twitchTopClips}
+              elementWidth={300}
+              itemRender={clip => (
+                <ClipContainer key={clip.id}>
+                  <ClipGridView
+                    thumbnail={clip.thumbnails.small}
+                    title={clip.title}
+                    channelName={clip.channel}
+                    createdAt={clip.createdAt}
+                    onPlay={() => openClip(clip.id)}
+                  />
+                </ClipContainer>
+              )}
+              afterRedner={
+                <>
+                  {data.twitchTopClips.length === 0 && (
+                    <div>Клипы не найдены</div>
+                  )}
+                  {/* {loading && <div>Загрузка...</div>} */}
+                </>
+              }
+            />
           );
         }}
       </Query>

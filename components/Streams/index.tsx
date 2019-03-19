@@ -7,48 +7,40 @@ import { Grid } from '../../ui/Grid';
 import Stream from './Stream';
 
 const GET_CHANNELS_TOP = gql`
-  query channelsTop {
-    channels(where: { cost_gt: 0, live: true }, orderBy: cost_DESC, first: 6) {
+  query channelPromotionsTop {
+    channelPromotionsTop {
       id
-      channelId
-      name
-      logo
-      title
-      banner
-      live
       cost
     }
   }
 `;
 
-const Divider = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.dark2Color};
-  margin: 10px;
+const StreamsBox = styled.div`
+  padding: 20px 10px;
+`;
+
+const StreamBox = styled.div`
+  margin: 5px;
+  border-radius: 4px;
+  overflow: hidden;
 `;
 
 const Streams: FC = () => (
-  <Query query={GET_CHANNELS_TOP} pollInterval={3e3}>
-    {({ error, data }) => {
-      if (error || !data.channels) {
-        return null;
-      }
-
-      return (
-        <div style={{ padding: '10px 20px' }}>
-          <Grid
-            elementWidth={280}
-            maxRows={1}
-            items={data.channels}
-            itemRender={channel => (
-              <div key={`${channel.id}-${channel.cost}`} style={{ padding: 5 }}>
-                <Stream {...channel} />
-              </div>
-            )}
-            afterRedner={<Divider />}
-          />
-        </div>
-      );
-    }}
+  <Query query={GET_CHANNELS_TOP}>
+    {({ data }) => (
+      <StreamsBox>
+        <Grid
+          elementWidth={300}
+          maxRows={1}
+          items={data.channelPromotionsTop || []}
+          itemRender={channel => (
+            <StreamBox key={`${channel.id}-${channel.cost}`}>
+              <Stream id={channel.id} cost={channel.cost} />
+            </StreamBox>
+          )}
+        />
+      </StreamsBox>
+    )}
   </Query>
 );
 

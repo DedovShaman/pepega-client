@@ -54,12 +54,11 @@ interface IProps extends IClip {
 export const ClipView: FC<IProps> = ({
   id,
   title,
-  cover,
+  thumbnail,
   likes,
   dislikes,
-  clipId,
   createdAt,
-  author,
+  authorId,
   meta,
   autoPlay
 }) => {
@@ -71,7 +70,7 @@ export const ClipView: FC<IProps> = ({
           <>
             <meta property="og:title" content={title} />
             <meta property="og:description" content={title} />
-            <meta property="og:image" content={cover} />
+            <meta property="og:image" content={thumbnail} />
             <meta
               property="og:url"
               content={`https://twitchru.com/clip?id=${id}`}
@@ -80,7 +79,7 @@ export const ClipView: FC<IProps> = ({
         )}
       </Head>
       <ContentBox>
-        <TwitchClipPlayer sourceId={clipId} autoPlay={autoPlay} />
+        <TwitchClipPlayer sourceId={id} autoPlay={autoPlay} />
       </ContentBox>
       <Bottom>
         <ClipReactionProvider clipId={id}>
@@ -109,9 +108,9 @@ export const ClipView: FC<IProps> = ({
         </ClipReactionProvider>
 
         <ClipShare id={id} />
-        {author && <ClipMenu id={id} authorId={author.id} />}
+        {authorId && <ClipMenu id={id} authorId={authorId} />}
         <EmptyBottom />
-        {author && <ClipAuthor createdAt={createdAt} authorId={author.id} />}
+        {authorId && <ClipAuthor createdAt={createdAt} authorId={authorId} />}
       </Bottom>
       <CommentsBox>
         <Comments clipId={id} />

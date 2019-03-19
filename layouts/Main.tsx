@@ -116,8 +116,8 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
         onClose={() => router.replace(backPath)}
       >
         <div style={{ width: '1000px' }}>
-          <ClipProvider where={{ clipId }}>
-            {({ clip }) => <ClipView {...clip} autoPlay />}
+          <ClipProvider id={clipId} noRealtime>
+            {({ clip }) => <ClipView {...clip} id={clipId} autoPlay />}
           </ClipProvider>
         </div>
       </Modal>

@@ -12,7 +12,7 @@ import { ClipGridView } from './ClipGridView';
 export const GET_CLIPS = gql`
   query getClips(
     $where: ClipWhereInput
-    $orderBy: ClipOrderByInput
+    $orderBy: [ClipOrderByInput]
     $after: String
     $first: Int
   ) {
@@ -32,7 +32,7 @@ const SectionTitle = styled.div`
   display: flex;
   width: 100%;
   font-size: 18px;
-  padding: 15px 0;
+  padding: 25px 5px 10px;
 
   a {
     cursor: pointer;
@@ -40,13 +40,11 @@ const SectionTitle = styled.div`
 `;
 
 const ClipContainer = styled.div`
-  padding: 5px;
+  margin: 5px;
+  border-radius: 4px;
+  overflow: hidden;
 `;
 
-const Divider = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.dark2Color};
-  margin: 10px;
-`;
 interface IProps {
   where?: any;
   orderBy?: any;
@@ -72,10 +70,7 @@ export const Clips: FC<IProps> = ({
     <Query
       query={GET_CLIPS}
       variables={{
-        where: {
-          deletedAt: null,
-          ...where
-        },
+        where,
         orderBy,
         first: rows ? rows * 6 : limit
       }}
@@ -88,7 +83,7 @@ export const Clips: FC<IProps> = ({
         const clips = data.clips;
 
         return (
-          <Box style={{ padding: '0 20px' }}>
+          <Box style={{ padding: '0 10px' }}>
             <InfiniteScroll
               dataLength={clips.length}
               hasMore={!rows && !noMore && !loading}
@@ -131,26 +126,26 @@ export const Clips: FC<IProps> = ({
                 }
                 maxRows={rows}
                 items={clips}
-                elementWidth={280}
+                elementWidth={300}
                 itemRender={({ id }) => (
                   <ClipContainer key={id}>
-                    <ClipProvider where={{ id }} noRealtime>
+                    <ClipProvider id={id} noRealtime>
                       {({ clip }) => (
                         <ClipGridView
-                          clip={clip}
+                          {...clip}
                           onPlay={() => {
                             router.push(
                               {
                                 pathname: router.route,
                                 query: {
-                                  clipId: clip.clipId,
+                                  clipId: clip.id,
                                   backPath: router.asPath,
                                   ...router.query
                                 }
                               },
                               {
                                 pathname: '/clip',
-                                query: { id: clip.clipId }
+                                query: { id: clip.id }
                               },
                               {
                                 shallow: true
@@ -162,7 +157,6 @@ export const Clips: FC<IProps> = ({
                     </ClipProvider>
                   </ClipContainer>
                 )}
-                afterRedner={<Divider />}
               />
             </InfiniteScroll>
           </Box>

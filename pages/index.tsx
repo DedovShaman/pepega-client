@@ -1,19 +1,23 @@
 import { Clips } from '../components/Clips/Clips';
 import Layout from '../layouts/Main';
-import { now } from '../utils/now';
-
-const dayAgo = now('-1d').toISOString();
 
 const IndexPage = () => (
   <Layout streams>
     <Clips
       title="Топ за день"
       titleLink="/top/day"
-      where={{ createdAt_gt: dayAgo, score_gt: 0 }}
-      orderBy="score_DESC"
+      where={{
+        createdAt: {
+          ago: '1d'
+        },
+        score: {
+          greaterThenEqual: 0
+        }
+      }}
+      orderBy={[{ field: 'score', type: 'DESC' }]}
       rows={2}
     />
-    <Clips title="Новое" titleLink="/new" orderBy="createdAt_DESC" />
+    <Clips title="Новое" titleLink="/new" />
   </Layout>
 );
 

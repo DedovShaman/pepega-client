@@ -21,9 +21,9 @@ const PostBox = styled.div`
 
 const PostPage = () => {
   const router = useRouter();
-  const clipId = router.query.id;
+  const id = router.query.id;
 
-  if (typeof clipId !== 'string') {
+  if (typeof id !== 'string') {
     return null;
   }
 
@@ -31,7 +31,7 @@ const PostPage = () => {
     <Layout>
       <Box>
         <PostBox>
-          <ClipProvider where={{ clipId }}>
+          <ClipProvider id={id} noRealtime>
             {({ clip }) => <ClipView {...clip} meta />}
           </ClipProvider>
         </PostBox>

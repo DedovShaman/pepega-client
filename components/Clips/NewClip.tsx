@@ -13,11 +13,11 @@ import { VideoPreview } from '../../ui/VideoPreview';
 import { parseSource } from '../../utils/parseSoruce';
 
 const GET_TWITCH_CLIP = gql`
-  query getTwitchClip($sourceUrl: String!, $clipId: String!) {
-    clip(where: { clipId: $clipId }) {
+  query getTwitchClip($sourceUrl: String!, $id: String!) {
+    clip(id: $id) {
       id
       title
-      cover
+      thumbnail
       createdAt
     }
     twitchClip(sourceUrl: $sourceUrl) {
@@ -94,7 +94,7 @@ export const NewClip: FC = () => {
             query={GET_TWITCH_CLIP}
             variables={{
               sourceUrl,
-              clipId: soruceData && soruceData.payload.sourceId
+              id: soruceData && soruceData.payload.sourceId
             }}
             skip={!soruceData}
           >
@@ -179,8 +179,8 @@ export const NewClip: FC = () => {
                         createClip({
                           variables: {
                             data: {
+                              id: data.twitchClip.slug,
                               title,
-                              clipId: data.twitchClip.slug,
                               nfws,
                               spoiler
                             }
