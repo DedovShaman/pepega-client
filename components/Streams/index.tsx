@@ -20,7 +20,7 @@ const StreamsBox = styled.div`
 `;
 
 const StreamBox = styled.div`
-  margin: 5px;
+  margin: 6px;
   border-radius: 4px;
   overflow: hidden;
 `;
@@ -33,9 +33,13 @@ const Streams: FC = () => (
           elementWidth={300}
           maxRows={1}
           items={data.channelPromotionsTop || []}
-          itemRender={channel => (
+          itemRender={(channel, index) => (
             <StreamBox key={`${channel.id}-${channel.cost}`}>
-              <Stream id={channel.id} cost={channel.cost} />
+              <Stream
+                id={channel.id}
+                cost={channel.cost}
+                livePreview={index < 3}
+              />
             </StreamBox>
           )}
         />
