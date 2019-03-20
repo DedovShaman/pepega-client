@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import Link from 'next/link';
+import { darken } from 'polished';
 import { FC } from 'react';
 import { Query } from 'react-apollo';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -28,19 +29,29 @@ const Box = styled.div`
   width: 100%;
 `;
 
+const SectionBox = styled.div`
+  padding: 30px 5px 15px;
+`;
+
 const SectionTitle = styled.div`
   display: flex;
   width: 100%;
   font-size: 18px;
-  padding: 25px 5px 10px;
 
   a {
     cursor: pointer;
   }
 `;
 
+const SectionDescription = styled.div`
+  display: flex;
+  width: 100%;
+  font-size: 12px;
+  color: ${({ theme }) => darken(0.4, theme.text1Color)};
+`;
+
 const ClipContainer = styled.div`
-  margin: 5px;
+  margin: 6px;
   border-radius: 4px;
   overflow: hidden;
 `;
@@ -50,6 +61,7 @@ interface IProps {
   orderBy?: any;
   title?: string;
   titleLink?: string;
+  description?: string;
   rows?: number;
   limit?: number;
   noMore?: boolean;
@@ -59,6 +71,7 @@ export const Clips: FC<IProps> = ({
   where,
   orderBy,
   title,
+  description,
   noMore,
   rows,
   titleLink
@@ -113,14 +126,24 @@ export const Clips: FC<IProps> = ({
                 beforeRender={
                   <>
                     {title && !titleLink && (
-                      <SectionTitle>{title}</SectionTitle>
+                      <SectionBox>
+                        <SectionTitle>{title}</SectionTitle>
+                        {description && (
+                          <SectionDescription>{description}</SectionDescription>
+                        )}
+                      </SectionBox>
                     )}
                     {title && titleLink && (
-                      <SectionTitle>
-                        <Link href={titleLink} passHref>
-                          <a>{title}</a>
-                        </Link>
-                      </SectionTitle>
+                      <SectionBox>
+                        <SectionTitle>
+                          <Link href={titleLink} passHref>
+                            <a>{title}</a>
+                          </Link>
+                        </SectionTitle>
+                        {description && (
+                          <SectionDescription>{description}</SectionDescription>
+                        )}
+                      </SectionBox>
                     )}
                   </>
                 }

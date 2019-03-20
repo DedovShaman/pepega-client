@@ -30,7 +30,7 @@ const Box = styled.div`
 `;
 
 const ClipContainer = styled.div`
-  margin: 5px;
+  margin: 6px;
   border-radius: 4px;
   overflow: hidden;
 `;

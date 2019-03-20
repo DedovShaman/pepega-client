@@ -6,6 +6,7 @@ const IndexPage = () => (
     <Clips
       title="Топ за день"
       titleLink="/top/day"
+      description="Клипы за 24 часа с самым высоким рейтингом"
       where={{
         createdAt: {
           ago: '1d'
@@ -17,7 +18,11 @@ const IndexPage = () => (
       orderBy={[{ field: 'score', type: 'DESC' }]}
       rows={2}
     />
-    <Clips title="Новое" titleLink="/new" />
+    <Clips
+      title="Новое"
+      titleLink="/new"
+      description="Самые последние предложенные клипы"
+    />
   </Layout>
 );
 
