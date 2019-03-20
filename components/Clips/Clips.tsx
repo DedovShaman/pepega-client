@@ -30,13 +30,13 @@ const Box = styled.div`
 `;
 
 const SectionBox = styled.div`
-  padding: 30px 5px 15px;
+  padding: 30px 5px 10px;
 `;
 
 const SectionTitle = styled.div`
   display: flex;
   width: 100%;
-  font-size: 18px;
+  font-size: 16px;
 
   a {
     cursor: pointer;

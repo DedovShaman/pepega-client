@@ -55,10 +55,15 @@ const Data = styled.div`
   flex-direction: column;
   flex: 1;
   padding: 0 5px;
+  line-height: 16px;
+`;
+
+const DataBox = styled.div`
+  height: 30px;
 `;
 
 const Title = styled.div`
-  font-size: 13.5px;
+  font-size: 12px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -66,6 +71,10 @@ const Title = styled.div`
   text-align: left;
   cursor: pointer;
   color: ${({ theme }) => theme.text1Color};
+`;
+
+const Description = styled.div`
+  font-size: 11px;
 `;
 
 const Count = styled.div`
@@ -80,13 +89,13 @@ const Count = styled.div`
 
   span {
     display: flex;
-    padding: 4px 8px;
+    align-items: center;
+    height: 30px;
+    padding: 0 8px;
     border-radius: 4px;
     background: ${({ theme }) => lighten(0.1, theme.dark2Color)};
   }
 `;
-
-const Description = styled.div``;
 
 const IconBox = styled.div`
   margin-right: 8px;
@@ -121,14 +130,16 @@ export const CardMedia: FC<IProps> = ({
           </Avatar>
         )}
         <Data>
-          <Title>{title}</Title>
-          <Description>
-            {description && (
-              <a href={descriptionLink} target="_blank">
-                {description}
-              </a>
-            )}
-          </Description>
+          <DataBox>
+            <Title>{title}</Title>
+            <Description>
+              {description && (
+                <a href={descriptionLink} target="_blank">
+                  {description}
+                </a>
+              )}
+            </Description>
+          </DataBox>
         </Data>
         {typeof count === 'number' && count !== 0 && (
           <Count>
