@@ -141,16 +141,14 @@ export const CardMedia: FC<IProps> = ({
             </Description>
           </DataBox>
         </Data>
-        {typeof count === 'number' && count !== 0 && (
-          <Count>
-            <span>
-              <IconBox>
-                <Icon type={countIcon} />
-              </IconBox>
-              {shortNumbers(count)}
-            </span>
-          </Count>
-        )}
+        <Count>
+          <span>
+            <IconBox>
+              <Icon type={countIcon} />
+            </IconBox>
+            {typeof count === 'number' ? shortNumbers(count) : 0}
+          </span>
+        </Count>
       </Content>
     </Box>
   );
