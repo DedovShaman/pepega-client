@@ -2,6 +2,7 @@ import { rgba } from 'polished';
 import { FC, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import styled from 'styled-components';
+import { humanNumbers } from '../../utils/count';
 import { Icon } from '../Icon';
 
 const Box = styled.div`
@@ -57,6 +58,10 @@ const PreviewBlurText = styled.div`
 
 const Views = styled.div<{ width: number }>`
   display: flex;
+  background: #000000a3;
+  color: ${({ theme }) => rgba(theme.text1Color, 0.8)};
+  padding: 5px 10px;
+  border-radius: 5px;
 
   i {
     display: flex;
@@ -95,7 +100,7 @@ interface IProps {
   nsfw?: boolean;
   spoiler?: boolean;
   date?: string;
-  views?: string;
+  views?: number;
 }
 
 export const VideoPreview: FC<IProps> = ({
@@ -134,7 +139,7 @@ export const VideoPreview: FC<IProps> = ({
           <Bottom width={width}>
             {views && (
               <Views width={width}>
-                <Icon type="eye" /> {views}
+                <Icon type="eye" /> {humanNumbers(views)}
               </Views>
             )}
             <BottomRight>{date && <Date>{date}</Date>}</BottomRight>
