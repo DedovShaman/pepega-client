@@ -161,11 +161,11 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
                   >
                     <CategoriesProvider>
                       {({ categories }) =>
-                        categories.map(({ game }) => (
+                        categories.map(game => (
                           <LeftMenu.SubItem
                             route={`/categories?game=${game.name}`}
                             active={router.query.game === game.name}
-                            key={game._id}
+                            key={game.id}
                           >
                             {game.name}
                           </LeftMenu.SubItem>
