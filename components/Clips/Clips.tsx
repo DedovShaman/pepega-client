@@ -13,7 +13,7 @@ import { ClipGridView } from './ClipGridView';
 export const GET_CLIPS = gql`
   query getClips(
     $where: ClipWhereInput
-    $orderBy: [ClipOrderByInput]
+    $orderBy: [OrderByInput!]
     $after: String
     $first: Int
   ) {

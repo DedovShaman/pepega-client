@@ -21,6 +21,7 @@ interface IProps {
   title?: string;
   channelName?: string;
   score?: number;
+  viewsCount?: number;
   onPlay: () => void;
 }
 
@@ -32,6 +33,7 @@ export const ClipGridView: FC<IProps> = ({
   title,
   channelName,
   score,
+  viewsCount,
   onPlay
 }) => {
   let date;
@@ -50,6 +52,7 @@ export const ClipGridView: FC<IProps> = ({
             spoiler={spoiler}
             cover={thumbnail}
             date={date}
+            views={viewsCount}
           />
         </PreviewContent>
       }

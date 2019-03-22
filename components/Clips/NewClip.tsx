@@ -28,7 +28,7 @@ const GET_TWITCH_CLIP = gql`
 `;
 
 const CREATE_CLIP = gql`
-  mutation createClip($data: ClipCreateInput!) {
+  mutation createClip($data: CreateClipInput!) {
     createClip(data: $data) {
       id
     }
