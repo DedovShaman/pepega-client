@@ -21,7 +21,7 @@ const PreviewContent = styled.div`
 `;
 
 const GET_STREAM = gql`
-  query twitchStream($userId: String) {
+  query twitchStreamWithUser($userId: String!) {
     twitchUser(userId: $userId) {
       id
       login
