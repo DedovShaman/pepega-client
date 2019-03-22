@@ -15,7 +15,6 @@ const GET_TWITCH_CHANNEL_TOP_CLIPS = gql`
       createdAt
       thumbnails {
         small
-        tiny
       }
       viewsCount
     }
@@ -84,6 +83,7 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
               itemRender={clip => (
                 <ClipContainer key={clip.id}>
                   <ClipGridView
+                    viewsCount={clip.viewsCount}
                     thumbnail={clip.thumbnails.small}
                     title={clip.title}
                     channelName={clip.channel}
