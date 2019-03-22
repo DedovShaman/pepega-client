@@ -5,24 +5,8 @@ import { Query } from 'react-apollo';
 const GET_TWITCH_TOP_GAMES = gql`
   query twitchTopGames {
     twitchTopGames {
-      channels
-      viewers
-      game {
-        _id
-        name
-        popularity
-        giantbomb_id
-        box {
-          large
-          medium
-          small
-        }
-        logo {
-          large
-          medium
-          small
-        }
-      }
+      id
+      name
     }
   }
 `;
