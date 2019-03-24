@@ -152,7 +152,7 @@ export const Clips: FC<IProps> = ({
                 elementWidth={300}
                 itemRender={({ id }) => (
                   <ClipContainer key={id}>
-                    <ClipProvider id={id} noRealtime>
+                    <ClipProvider where={{ id }} noRealtime>
                       {({ clip }) => (
                         <ClipGridView
                           {...clip}

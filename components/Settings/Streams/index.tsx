@@ -11,15 +11,15 @@ import ChannelSupporter from './ChannelSupporter';
 
 const GET_USER = gql`
   query getUser {
-    user(where: { id: "" }) {
+    user {
       id
     }
   }
 `;
 
-const NEW_SUPPORT_CHANNEL = gql`
-  mutation newSupportChannel($channelName: String!) {
-    newSupportChannel(channelName: $channelName)
+const CREATE_CHANNEL = gql`
+  mutation createPromoter($channelName: String!) {
+    createPromoter(channelName: $channelName)
   }
 `;
 
@@ -106,8 +106,8 @@ const ChannelSupportersManage: FC = () => {
                   </ChannelsBox>
                   {channelSupporters.length < 6 && (
                     <AddStreamForm>
-                      <Mutation mutation={NEW_SUPPORT_CHANNEL}>
-                        {newSupportChannel => (
+                      <Mutation mutation={CREATE_CHANNEL}>
+                        {createPromoter => (
                           <Input
                             autoFocus
                             ref={textInput}
@@ -116,7 +116,7 @@ const ChannelSupportersManage: FC = () => {
                               const channelName = textInput.current.value.trim();
 
                               if (e.key === 'Enter' && channelName.length > 0) {
-                                newSupportChannel({
+                                createPromoter({
                                   variables: { channelName }
                                 });
                                 textInput.current.value = '';

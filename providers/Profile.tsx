@@ -8,7 +8,7 @@ const GET_PROFILE = gql`
       id
       name
       avatar
-      type
+      service
       serviceId
       visible
     }
@@ -21,7 +21,7 @@ const PROFILE_UPDATED = gql`
       node {
         name
         avatar
-        type
+        service
         serviceId
         visible
       }

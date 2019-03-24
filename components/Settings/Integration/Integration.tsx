@@ -74,20 +74,20 @@ export const Integration: FC<IProps> = ({ profile, denyDisconnect }) => {
   let icon = null;
   let socialLink = '';
 
-  switch (profile.type) {
-    case 'GOOGLE': {
+  switch (profile.service) {
+    case 'google': {
       bgColor = '#DB4437';
       icon = 'google';
       socialLink = `https://plus.google.com/${profile.serviceId}`;
       break;
     }
-    case 'VK': {
+    case 'vkontakte': {
       bgColor = '#507299';
       icon = 'vkontakte';
       socialLink = `https://vk.com/id${profile.serviceId}`;
       break;
     }
-    case 'TWITCH': {
+    case 'twitch': {
       bgColor = '#6542a6';
       icon = 'twitch';
       socialLink = `https://twitch.tv/${profile.name.toLowerCase()}`;

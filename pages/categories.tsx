@@ -3,7 +3,7 @@ import Layout from '../layouts/Main';
 
 const CategoriesPage = () => (
   <Layout>
-    <TwitchTopClips limit={100} />
+    <TwitchTopClips limit={30} />
   </Layout>
 );
 

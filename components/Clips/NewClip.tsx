@@ -14,7 +14,7 @@ import { parseSource } from '../../utils/parseSoruce';
 
 const GET_TWITCH_CLIP = gql`
   query getTwitchClip($sourceUrl: String!, $id: String!) {
-    clip(id: $id) {
+    clip(where: { id: $id }) {
       id
       title
       thumbnail
@@ -28,7 +28,7 @@ const GET_TWITCH_CLIP = gql`
 `;
 
 const CREATE_CLIP = gql`
-  mutation createClip($data: CreateClipInput!) {
+  mutation createClip($data: ClipCreateInput!) {
     createClip(data: $data) {
       id
     }
@@ -180,7 +180,7 @@ export const NewClip: FC = () => {
                           variables: {
                             data: {
                               id: data.twitchClip.slug,
-                              title,
+                              title: title || undefined,
                               nfws,
                               spoiler
                             }

@@ -3,8 +3,8 @@ import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
 export const GET_CLIP = gql`
-  query getClip($id: String!) {
-    clip(id: $id) {
+  query getClip($where: ClipWhereUniqueInput!) {
+    clip(where: $where) {
       id
       title
       nfws
@@ -57,17 +57,21 @@ class ClipProviderInner extends Component<IPropsInner> {
   }
 }
 
-interface IProps {
+interface IClipWhereUniqueInput {
   id?: string;
+}
+
+interface IProps {
+  where: IClipWhereUniqueInput;
   noRealtime?: boolean;
   children: any;
 }
 
-export const ClipProvider: FC<IProps> = ({ children, id, noRealtime }) => (
-  <Query query={GET_CLIP} variables={{ id }}>
+export const ClipProvider: FC<IProps> = ({ children, where, noRealtime }) => (
+  <Query query={GET_CLIP} variables={{ where }}>
     {({ subscribeToMore, loading, error, data }) => {
       if (loading || error || !data || !data.clip) {
-        return children({ clip: { id } });
+        return children({ clip: { ...where } });
       }
 
       const clip = data.clip;

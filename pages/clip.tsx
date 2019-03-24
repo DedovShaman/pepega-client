@@ -31,7 +31,7 @@ const PostPage = () => {
     <Layout>
       <Box>
         <PostBox>
-          <ClipProvider id={id} noRealtime>
+          <ClipProvider where={{ id }} noRealtime>
             {({ clip }) => <ClipView {...clip} meta />}
           </ClipProvider>
         </PostBox>

@@ -30,7 +30,7 @@ const SectionTitle = styled.div`
 
 const GET_USER = gql`
   query getUser {
-    user(where: { id: "" }) {
+    user {
       id
     }
   }
@@ -46,7 +46,7 @@ export default class Integrations extends React.Component {
           }
 
           return (
-            <ProfilesProvider where={{ user: { id: data.user.id } }}>
+            <ProfilesProvider where={{ userId: { equal: data.user.id } }}>
               {({ profiles }) => (
                 <div>
                   <SectionTitle>Подключить новую учетную запись</SectionTitle>

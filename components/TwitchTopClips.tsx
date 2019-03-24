@@ -51,7 +51,7 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
           limit
         }}
       >
-        {({ loading, error, data }) => {
+        {({ error, data }) => {
           if (error || !data || !data.twitchTopClips) {
             return null;
           }

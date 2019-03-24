@@ -3,8 +3,8 @@ import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
 const GET_USER = gql`
-  query getUser($id: ID) {
-    user(id: $id) {
+  query getUser($where: UserWhereUniqueInput) {
+    user(where: $where) {
       id
       name
       avatar
@@ -43,18 +43,22 @@ class UserProviderInner extends Component<IPropsInner> {
   }
 }
 
-interface IProps {
+interface IUserWhereUniqueInput {
   id?: string;
 }
 
-const UserProvider: FC<IProps> = ({ children, id = '' }) => (
-  <Query query={GET_USER} variables={{ id }}>
+interface IProps {
+  where?: IUserWhereUniqueInput;
+}
+
+const UserProvider: FC<IProps> = ({ children, where }) => (
+  <Query query={GET_USER} variables={{ where }}>
     {({ loading, error, data, subscribeToMore }) => {
       if (loading || error || !data.user) {
         return null;
       }
 
-      const subWhere: any = { node: { id } };
+      const subWhere: any = { node: where };
 
       return (
         <UserProviderInner
