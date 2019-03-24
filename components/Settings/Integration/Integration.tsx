@@ -14,8 +14,8 @@ const SET_PROFILE_VISIBLE = gql`
 `;
 
 const DISCONNECT_PROFILE = gql`
-  mutation disconnectProfile($profileId: ID!) {
-    disconnectProfile(profileId: $profileId)
+  mutation disconnectProfile($id: ID!) {
+    disconnectProfile(id: $id)
   }
 `;
 
@@ -117,7 +117,7 @@ export const Integration: FC<IProps> = ({ profile, denyDisconnect }) => {
                   mainColor={bgColor}
                   onClick={() =>
                     disconnectProfile({
-                      variables: { profileId: profile.id }
+                      variables: { id: profile.id }
                     })
                   }
                 >
