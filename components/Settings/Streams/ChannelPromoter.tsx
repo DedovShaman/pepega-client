@@ -8,15 +8,15 @@ import { Button } from '../../../ui/Button';
 import { Input } from '../../../ui/Input';
 import { SWRow } from '../../../ui/SWRow';
 
-const SET_CHANNEL_SUPPORTER_ACTIVE = gql`
-  mutation setChannelSupporterActive($id: ID!, $active: Boolean!) {
-    setChannelSupporterActive(id: $id, active: $active)
+const SET_CHANNEL_PROMOTER_ACTIVE = gql`
+  mutation setChannelPromoterActive($id: ID!, $active: Boolean!) {
+    setChannelPromoterActive(id: $id, active: $active)
   }
 `;
 
-const DELETE_CHANNEL_SUPPORTER = gql`
-  mutation deleteChannelSupporter($id: ID!) {
-    deleteChannelSupporter(where: { id: $id }) {
+const DELETE_CHANNEL_PROMOTER = gql`
+  mutation deleteChannelPromoter($id: ID!) {
+    deleteChannelPromoter(where: { id: $id }) {
       id
     }
   }
@@ -103,9 +103,9 @@ const CostInputBox = styled.div`
   }
 `;
 
-const IntegrationBox = styled('div')``;
+const ChannelPromoterBox = styled('div')``;
 
-const IntegrationHeader = styled('div')`
+const ChannelPromoterHeader = styled('div')`
   padding: 0 10px;
   display: flex;
   align-items: center;
@@ -113,7 +113,7 @@ const IntegrationHeader = styled('div')`
   background: ${({ theme }) => lighten(0.1, theme.dark2Color)};
 `;
 
-const IntegrationLogo = styled.div`
+const ChannelPromoterLogo = styled.div`
   font-size: 18px;
   width: 40px;
   display: flex;
@@ -121,39 +121,39 @@ const IntegrationLogo = styled.div`
   align-items: center;
 `;
 
-const IntegrationHeaderActions = styled.div`
+const ChannelPromoterHeaderActions = styled.div`
   margin-left: auto;
 `;
 
-const IntegrationContent = styled('div')`
+const ChannelPromoterContent = styled('div')`
   padding: 0 20px;
   border-radius: 0 0 5px 5px;
 `;
 
 interface IProps {
-  channelSupporter: any;
+  channelPromoter: any;
 }
 
-export const Integration: FC<IProps> = ({ channelSupporter }) => (
-  <ChannelProvider id={channelSupporter.channel.id}>
+export const ChannelPromoter: FC<IProps> = ({ channelPromoter }) => (
+  <ChannelProvider id={channelPromoter.channelId}>
     {({ channel }) => (
-      <IntegrationBox>
-        <IntegrationHeader>
-          <IntegrationLogo>
+      <ChannelPromoterBox>
+        <ChannelPromoterHeader>
+          <ChannelPromoterLogo>
             <LiveBox>{channel.cost > 0 && channel.live && <LiveDot />}</LiveBox>
-          </IntegrationLogo>
+          </ChannelPromoterLogo>
           <ChannelHeaderInfo>
             <ChannelName>{channel.name}</ChannelName>
             <ChannelCost>{channel.cost}</ChannelCost>
           </ChannelHeaderInfo>
-          <IntegrationHeaderActions>
-            <Mutation mutation={DELETE_CHANNEL_SUPPORTER}>
-              {deleteChannelSupporter => (
+          <ChannelPromoterHeaderActions>
+            <Mutation mutation={DELETE_CHANNEL_PROMOTER}>
+              {deleteChannelPromoter => (
                 <Button
                   mainColor="#4d517f"
                   onClick={() =>
-                    deleteChannelSupporter({
-                      variables: { id: channelSupporter.id }
+                    deleteChannelPromoter({
+                      variables: { id: channelPromoter.id }
                     })
                   }
                 >
@@ -161,14 +161,14 @@ export const Integration: FC<IProps> = ({ channelSupporter }) => (
                 </Button>
               )}
             </Mutation>
-          </IntegrationHeaderActions>
-        </IntegrationHeader>
-        <IntegrationContent>
-          <Mutation mutation={SET_CHANNEL_SUPPORTER_ACTIVE}>
-            {setChannelSupporterActive => (
+          </ChannelPromoterHeaderActions>
+        </ChannelPromoterHeader>
+        <ChannelPromoterContent>
+          <Mutation mutation={SET_CHANNEL_PROMOTER_ACTIVE}>
+            {setChannelPromoterActive => (
               <SWRow
                 activeColor={lighten(0.05, '#4d517f')}
-                active={channelSupporter.active}
+                active={channelPromoter.active}
                 title={
                   <CostBox>
                     <CostInputBox>
@@ -178,20 +178,20 @@ export const Integration: FC<IProps> = ({ channelSupporter }) => (
                   </CostBox>
                 }
                 onChange={() =>
-                  setChannelSupporterActive({
+                  setChannelPromoterActive({
                     variables: {
-                      id: channelSupporter.id,
-                      active: !channelSupporter.active
+                      id: channelPromoter.id,
+                      active: !channelPromoter.active
                     }
                   })
                 }
               />
             )}
           </Mutation>
-        </IntegrationContent>
-      </IntegrationBox>
+        </ChannelPromoterContent>
+      </ChannelPromoterBox>
     )}
   </ChannelProvider>
 );
 
-export default Integration;
+export default ChannelPromoter;

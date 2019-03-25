@@ -3,35 +3,29 @@ import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
 const GET = gql`
-  query channelSupporter($where: ChannelSupporterWhereUniqueInput!) {
-    channelSupporter(where: $where) {
+  query channelPromoter($where: ChannelPromoterWhereUniqueInput!) {
+    channelPromoter(where: $where) {
       id
       active
-      channel {
-        id
-      }
+      channelId
     }
   }
 `;
 
 const UPDATED = gql`
-  subscription channelSupporter(
-    $where: ChannelSupporterSubscriptionWhereInput
-  ) {
-    channelSupporter(where: $where) {
+  subscription channelPromoter($where: ChannelPromoterSubscriptionWhereInput) {
+    channelPromoter(where: $where) {
       node {
         id
         active
-        channel {
-          id
-        }
+        channelId
       }
     }
   }
 `;
 
 interface IPropsInner {
-  channelSupporter: any;
+  channelPromoter: any;
   updated: () => void;
   children: any;
 }
@@ -43,7 +37,7 @@ class ProviderInner extends Component<IPropsInner> {
 
   public render() {
     return this.props.children({
-      channelSupporter: this.props.channelSupporter
+      channelPromoter: this.props.channelPromoter
     });
   }
 }
@@ -63,7 +57,7 @@ const Provider: FC<IProps> = ({ children, id = '' }) => (
 
       return (
         <ProviderInner
-          channelSupporter={data.channelSupporter}
+          channelPromoter={data.channelPromoter}
           updated={() => {
             subscribeToMore({
               document: UPDATED,
@@ -75,9 +69,9 @@ const Provider: FC<IProps> = ({ children, id = '' }) => (
 
                 return {
                   ...prev,
-                  channelSupporter: {
-                    ...prev.channelSupporter,
-                    ...subscriptionData.data.channelSupporter.node
+                  channelPromoter: {
+                    ...prev.channelPromoter,
+                    ...subscriptionData.data.channelPromoter.node
                   }
                 };
               }

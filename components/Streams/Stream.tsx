@@ -54,69 +54,45 @@ const StreamBox = styled.div`
 interface IProps {
   id: string;
   cost: number;
+  name: string;
+  title: string;
+  avatar: string;
   livePreview: boolean;
 }
 
-const Stream: FC<IProps> = ({ id, cost, livePreview }) => {
+const Stream: FC<IProps> = ({ id, cost, name, title, avatar, livePreview }) => {
+  let Media = null;
+  const descriptionLink = `https://www.twitch.tv/${name}`;
+
+  if (livePreview) {
+    Media = (
+      <>
+        <StreamBox>
+          {process.browser && <TwitchPlayer muted channel={name} />}
+        </StreamBox>
+        <StreamOverLink href={descriptionLink} target="_blank" />
+      </>
+    );
+  } else {
+    const previewImg = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${name}-${290}x${163}.jpg`;
+
+    Media = (
+      <PreviewContent>
+        <VideoPreview cover={previewImg} />
+      </PreviewContent>
+    );
+  }
+
   return (
-    <Query query={GET_STREAM} variables={{ userId: id }}>
-      {({ data }) => {
-        let avatar = null;
-        let title = '';
-        let login;
-        let description = '';
-        let descriptionLink;
-        let Media = null;
-
-        if (data && data.twitchUser) {
-          login = data.twitchUser.login;
-
-          if (data.twitchUser.profile_image_url) {
-            avatar = data.twitchUser.profile_image_url;
-          }
-
-          description = data.twitchUser.display_name;
-          descriptionLink = `https://www.twitch.tv/${login}`;
-        }
-
-        if (data && data.twitchStream) {
-          title = data.twitchStream.title;
-
-          if (livePreview) {
-            Media = (
-              <>
-                <StreamBox>
-                  {process.browser && <TwitchPlayer muted channel={login} />}
-                </StreamBox>
-                <StreamOverLink href={descriptionLink} target="_blank" />
-              </>
-            );
-          } else {
-            let previewImg = data.twitchStream.thumbnail_url;
-            previewImg = previewImg.replace('{width}', 290);
-            previewImg = previewImg.replace('{height}', 163);
-
-            Media = (
-              <PreviewContent>
-                <VideoPreview cover={previewImg} />
-              </PreviewContent>
-            );
-          }
-        }
-
-        return (
-          <CardMedia
-            media={Media}
-            avatar={avatar}
-            title={title}
-            description={description}
-            descriptionLink={descriptionLink}
-            count={cost}
-            countIcon="circle-o"
-          />
-        );
-      }}
-    </Query>
+    <CardMedia
+      media={Media}
+      avatar={avatar}
+      title={title}
+      description={name}
+      descriptionLink={descriptionLink}
+      count={cost}
+      countIcon="circle-o"
+    />
   );
 };
 

@@ -7,10 +7,13 @@ import { Grid } from '../../ui/Grid';
 import Stream from './Stream';
 
 const GET_CHANNELS_TOP = gql`
-  query channelPromotionsTop {
-    channelPromotionsTop {
+  query channelsTop {
+    channelsTop {
       id
       cost
+      name
+      title
+      avatar
     }
   }
 `;
@@ -32,14 +35,10 @@ const Streams: FC = () => (
         <Grid
           elementWidth={300}
           maxRows={1}
-          items={data.channelPromotionsTop || []}
+          items={data.channelsTop || []}
           itemRender={(channel, index) => (
             <StreamBox key={`${channel.id}-${channel.cost}`}>
-              <Stream
-                id={channel.id}
-                cost={channel.cost}
-                livePreview={index < 3}
-              />
+              <Stream {...channel} livePreview={index < 3} />
             </StreamBox>
           )}
         />

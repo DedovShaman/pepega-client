@@ -4,10 +4,10 @@ import { darken, lighten } from 'polished';
 import { createRef, FC } from 'react';
 import { Mutation, Query } from 'react-apollo';
 import styled from 'styled-components';
-import ChannelSupporterProvider from '../../../providers/ChannelSupporter';
-import ChannelSupportersProvider from '../../../providers/ChannelSupporters';
+import ChannelPromoterProvider from '../../../providers/ChannelPromoter';
+import ChannelPromotersProvider from '../../../providers/ChannelPromoters';
 import { Input } from '../../../ui/Input';
-import ChannelSupporter from './ChannelSupporter';
+import ChannelPromoter from './ChannelPromoter';
 
 const GET_USER = gql`
   query getUser {
@@ -18,8 +18,10 @@ const GET_USER = gql`
 `;
 
 const CREATE_CHANNEL = gql`
-  mutation createPromoter($channelName: String!) {
-    createPromoter(channelName: $channelName)
+  mutation createChannelPromoter($channelName: String!) {
+    createChannelPromoter(channelName: $channelName) {
+      id
+    }
   }
 `;
 
@@ -63,7 +65,7 @@ const AddStreamForm = styled.div`
   overflow: hidden;
 `;
 
-const ChannelSupportersManage: FC = () => {
+const ChannelPromotersManage: FC = () => {
   const textInput = createRef<HTMLInputElement>();
 
   return (
@@ -75,39 +77,27 @@ const ChannelSupportersManage: FC = () => {
 
         return (
           <Box>
-            <ChannelSupportersProvider
-              where={{ user: { id: data.user.id } }}
-              orderBy="cost_DESC"
-            >
-              {({ channelSupporters }) => (
+            <ChannelPromotersProvider>
+              {({ channelPromoters }) => (
                 <>
-                  <BlockTitle>
-                    Каналы {channelSupporters.length} из 6
-                  </BlockTitle>
+                  <BlockTitle>Каналы {channelPromoters.length} из 6</BlockTitle>
                   <ChannelsBox>
-                    {orderBy(
-                      channelSupporters,
-                      [
-                        e => e.channel.live && e.channel.cost > 0,
-                        e => e.channel.cost
-                      ],
-                      ['desc', 'desc']
-                    ).map(({ id }) => (
+                    {channelPromoters.map(({ id }) => (
                       <ChannelBox key={id}>
-                        <ChannelSupporterProvider id={id}>
-                          {({ channelSupporter }) => (
-                            <ChannelSupporter
-                              channelSupporter={channelSupporter}
+                        <ChannelPromoterProvider id={id}>
+                          {({ channelPromoter }) => (
+                            <ChannelPromoter
+                              channelPromoter={channelPromoter}
                             />
                           )}
-                        </ChannelSupporterProvider>
+                        </ChannelPromoterProvider>
                       </ChannelBox>
                     ))}
                   </ChannelsBox>
-                  {channelSupporters.length < 6 && (
+                  {channelPromoters.length < 6 && (
                     <AddStreamForm>
                       <Mutation mutation={CREATE_CHANNEL}>
-                        {createPromoter => (
+                        {createChannelPromoter => (
                           <Input
                             autoFocus
                             ref={textInput}
@@ -116,7 +106,7 @@ const ChannelSupportersManage: FC = () => {
                               const channelName = textInput.current.value.trim();
 
                               if (e.key === 'Enter' && channelName.length > 0) {
-                                createPromoter({
+                                createChannelPromoter({
                                   variables: { channelName }
                                 });
                                 textInput.current.value = '';
@@ -129,7 +119,7 @@ const ChannelSupportersManage: FC = () => {
                   )}
                 </>
               )}
-            </ChannelSupportersProvider>
+            </ChannelPromotersProvider>
           </Box>
         );
       }}
@@ -137,4 +127,4 @@ const ChannelSupportersManage: FC = () => {
   );
 };
 
-export default ChannelSupportersManage;
+export default ChannelPromotersManage;

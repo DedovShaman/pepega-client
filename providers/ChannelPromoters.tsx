@@ -2,26 +2,16 @@ import gql from 'graphql-tag';
 import { Component, FC } from 'react';
 import { Query } from 'react-apollo';
 
-const GET_CHANNEL_SUPPORTERS = gql`
-  query channelSupporters(
-    $where: ChannelSupporterWhereInput
-    $orderBy: ChannelSupporterOrderByInput
-  ) {
-    channelSupporters(where: $where, orderBy: $orderBy) {
+const GET_CHANNEL_PROMOTERS = gql`
+  query channelPromoters {
+    channelPromoters {
       id
-      channel {
-        id
-        cost
-        live
-      }
     }
   }
 `;
 
 const CHANNEL_SUPPORTER_SUB = gql`
-  subscription channelSupporter(
-    $where: ChannelSupporterSubscriptionWhereInput
-  ) {
+  subscription channelSupporter($where: channelPromotersubscriptionWhereInput) {
     channelSupporter(where: $where) {
       mutation
       previousValues {
@@ -29,11 +19,6 @@ const CHANNEL_SUPPORTER_SUB = gql`
       }
       node {
         id
-        channel {
-          id
-          cost
-          live
-        }
       }
     }
   }
@@ -41,7 +26,7 @@ const CHANNEL_SUPPORTER_SUB = gql`
 
 interface IPropsInner {
   subscribeNew: () => void;
-  channelSupporters: any;
+  channelPromoters: any;
   children: any;
 }
 
@@ -52,22 +37,22 @@ class Inner extends Component<IPropsInner> {
 
   public render() {
     return this.props.children({
-      channelSupporters: this.props.channelSupporters
+      channelPromoters: this.props.channelPromoters
     });
   }
 }
 
 interface IProps {
-  where: any;
+  where?: any;
   orderBy?: string;
   limit?: number;
   children: any;
 }
 
 const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
-  <Query query={GET_CHANNEL_SUPPORTERS} variables={{ where, orderBy }}>
+  <Query query={GET_CHANNEL_PROMOTERS}>
     {({ subscribeToMore, loading, error, data }) => {
-      if (loading || error || !data || !data.channelSupporters) {
+      if (loading || error || !data || !data.channelPromoters) {
         return null;
       }
 
@@ -77,7 +62,7 @@ const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
 
       return (
         <Inner
-          channelSupporters={data.channelSupporters}
+          channelPromoters={data.channelPromoters}
           subscribeNew={() => {
             subscribeToMore({
               document: CHANNEL_SUPPORTER_SUB,
@@ -96,13 +81,12 @@ const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
                 switch (mutation) {
                   case 'CREATED':
                     if (
-                      prev.channelSupporters.findIndex(c => c.id === node.id) <
-                      0
+                      prev.channelPromoters.findIndex(c => c.id === node.id) < 0
                     ) {
                       return {
                         ...prev,
-                        channelSupporters: [
-                          ...prev.channelSupporters.slice(-limit),
+                        channelPromoters: [
+                          ...prev.channelPromoters.slice(-limit),
                           node
                         ]
                       };
@@ -111,8 +95,8 @@ const Provider: FC<IProps> = ({ where, orderBy, children, limit }) => (
                   case 'DELETED':
                     return {
                       ...prev,
-                      channelSupporters: [
-                        ...prev.channelSupporters.filter(
+                      channelPromoters: [
+                        ...prev.channelPromoters.filter(
                           c => c.id !== previousValues.id
                         )
                       ]
