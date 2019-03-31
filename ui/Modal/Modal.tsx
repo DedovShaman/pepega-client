@@ -30,8 +30,13 @@ const BGOut = styled.div`
 const BoxW = styled.div`
   z-index: 3500;
   margin: auto;
-  padding: 60px 0;
+  /* padding: 50px 0; */
   display: flex;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const BoxNav = styled.div`
@@ -50,6 +55,10 @@ const BoxNav = styled.div`
   :hover {
     color: ${({ theme }) => theme.accent2Color};
   }
+
+  @media (max-width: 700px) {
+    display: none;
+  }
 `;
 
 const Box = styled('div')<{
@@ -62,21 +71,37 @@ const Box = styled('div')<{
   z-index: 3500;
   display: flex;
   position: relative;
+
+  @media (max-width: 700px) {
+    padding: 0;
+  }
 `;
 
 const ModalB = styled.div`
   background: ${({ theme }) =>
     theme.dark2Color && lighten(0.01, theme.dark2Color)};
   border-radius: 4px;
+  overflow: hidden;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  @media (max-width: 700px) {
+    border-radius: 0;
+  }
 `;
 
-const Header = styled.div`
-  display: flex;
+const Header = styled('div')<{
+  minimal: boolean;
+}>`
+  display: ${({ minimal }) => (minimal ? 'none' : 'flex')};
   align-items: center;
   height: 50px;
-  background: ${({ theme }) => theme.main1Color};
+  background: ${({ theme }) => darken(0.1, theme.main1Color)};
   border-radius: 4px 4px 0 0;
+
+  @media (max-width: 700px) {
+    border-radius: 0;
+    display: flex;
+  }
 `;
 
 const Title = styled.div`
@@ -93,9 +118,15 @@ const Close = styled.div`
   font-size: 22px;
   color: ${({ theme }) => theme.text1Color};
   cursor: pointer;
+  color: ${({ theme }) => lighten(0.3, theme.main1Color)};
 
   :hover {
     color: ${({ theme }) => theme.text1Color};
+  }
+
+  @media (max-width: 700px) {
+    top: 0;
+    right: 0;
   }
 `;
 
@@ -114,6 +145,10 @@ const CloseOut = styled.div`
 
   :hover {
     color: ${({ theme }) => theme.accent2Color};
+  }
+
+  @media (max-width: 700px) {
+    display: none;
   }
 `;
 
@@ -170,14 +205,12 @@ export const Modal: FC<IModalProps> = ({
               </BoxNav>
             )}
             <ModalB>
-              {!minimal && (
-                <Header>
-                  <Title>{title}</Title>
-                  <Close onClick={close}>
-                    <Icon type="close" />
-                  </Close>
-                </Header>
-              )}
+              <Header minimal={minimal}>
+                <Title>{title}</Title>
+                <Close onClick={close}>
+                  <Icon type="close" />
+                </Close>
+              </Header>
               <Content minimal={minimal}>{children}</Content>
             </ModalB>
             {minimal && (

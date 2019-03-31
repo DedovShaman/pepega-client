@@ -1,5 +1,5 @@
 import * as Settings from '../../components/Settings';
-import Streams from '../../components/Settings/Streams';
+import { ChannelPromotersManage } from '../../components/Settings/ChannelPromoters';
 import { Permission } from '../../helpers/Permission';
 import Layout from '../../layouts/Main';
 
@@ -9,7 +9,7 @@ const SettingsAdStreamsPage = () => (
       <Permission>
         <Settings.Title>Продвижение</Settings.Title>
         <Settings.Content>
-          <Streams />
+          <ChannelPromotersManage />
         </Settings.Content>
       </Permission>
     </Settings.Box>

@@ -19,7 +19,7 @@ const GET_CHANNELS_TOP = gql`
 `;
 
 const StreamsBox = styled.div`
-  padding: 20px 10px;
+  padding: 20px 10px 0;
 `;
 
 const StreamBox = styled.div`
@@ -38,7 +38,7 @@ const Streams: FC = () => (
           items={data.channelsTop || []}
           itemRender={(channel, index) => (
             <StreamBox key={`${channel.id}-${channel.cost}`}>
-              <Stream {...channel} livePreview={index < 3} />
+              <Stream {...channel} livePreview={index < 2} />
             </StreamBox>
           )}
         />

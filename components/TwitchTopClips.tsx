@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { darken } from 'polished';
 import { FC } from 'react';
 import { Query } from 'react-apollo';
 import styled from 'styled-components';
@@ -32,6 +33,27 @@ const ClipContainer = styled.div`
   margin: 6px;
   border-radius: 4px;
   overflow: hidden;
+`;
+
+const SectionBox = styled.div`
+  padding: 10px 5px 10px;
+`;
+
+const SectionTitle = styled.div`
+  display: flex;
+  width: 100%;
+  font-size: 16px;
+
+  a {
+    cursor: pointer;
+  }
+`;
+
+const SectionDescription = styled.div`
+  display: flex;
+  width: 100%;
+  font-size: 12px;
+  color: ${({ theme }) => darken(0.4, theme.text1Color)};
 `;
 
 interface IProps {
@@ -80,6 +102,18 @@ const TwitchFollows: FC<IProps> = ({ limit }) => {
             <Grid
               items={data.twitchTopClips}
               elementWidth={300}
+              beforeRender={
+                <SectionBox>
+                  <SectionTitle>
+                    {(
+                      router.query.channel ||
+                      router.query.game ||
+                      'Все категории'
+                    ).toUpperCase()}
+                  </SectionTitle>
+                  <SectionDescription>Лучшие клипы за день</SectionDescription>
+                </SectionBox>
+              }
               itemRender={clip => (
                 <ClipContainer key={clip.id}>
                   <ClipGridView

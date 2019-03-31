@@ -83,7 +83,7 @@ const GlobalStyle = `
   }
 
   #nprogress .bar {
-    background: #fff;
+    background: #6441A4;
     position: fixed;
     z-index: 1031;
     top: 0;

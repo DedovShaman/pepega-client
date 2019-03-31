@@ -16,7 +16,7 @@ const Box = styled.div`
   display: flex;
   flex: 1;
   background: ${({ theme }) => theme.dark2Color};
-  border-radius: 5px;
+  /* border-radius: 5px; */
   overflow: hidden;
 `;
 
