@@ -1,4 +1,4 @@
-import { lighten } from 'polished';
+import { darken, lighten } from 'polished';
 import { FC } from 'react';
 import styled from 'styled-components';
 import { NewClip } from '../components/Clips/NewClip';
@@ -27,8 +27,8 @@ const Title = styled.div`
   font-size: 15px;
   display: flex;
   align-items: center;
-  height: 50px;
-  background: ${({ theme }) => theme.main1Color};
+  height: 46px;
+  background: ${({ theme }) => darken(0.1, theme.main1Color)};
 `;
 
 const NewClipForm = styled.div`

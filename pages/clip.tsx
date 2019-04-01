@@ -9,11 +9,11 @@ const Box = styled.div`
   display: flex;
   justify-content: center;
   margin: 0 auto;
-  padding: 20px 0;
+  padding: 10px 0;
 `;
 
 const PostBox = styled.div`
-  margin: 0 20px;
+  margin: 0 10px;
   width: 800px;
   border-radius: 5px;
   overflow: hidden;

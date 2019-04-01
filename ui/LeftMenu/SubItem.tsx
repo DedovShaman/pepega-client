@@ -7,6 +7,9 @@ import useRouter from '../../hooks/useRouter';
 const SubItem = styled('a')<{
   active?: boolean;
 }>`
+  border-left: 4px solid transparent;
+  border-color: ${({ active, theme }) =>
+    active && darken(0.15, theme.main1Color)};
   padding: 0 20px 0 74px;
   height: 30px;
   display: flex;
@@ -16,7 +19,7 @@ const SubItem = styled('a')<{
   text-overflow: ellipsis;
   font-size: 13px;
   cursor: pointer;
-  color: ${({ theme }) => darken(0.2, theme.text1Color)};
+  color: ${({ theme, active }) => darken(active ? 0 : 0.2, theme.text1Color)};
   background: ${({ theme, active }) =>
     active ? lighten(0.04, theme.dark1Color) : 'transparent'};
 

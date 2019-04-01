@@ -21,6 +21,7 @@ import { NewClip } from '../components/Clips/NewClip';
 import Menu from '../components/Nav/Top/Menu';
 import UserProvider from '../providers/User';
 import { Avatar } from '../ui/Avatar';
+import { Button } from '../ui/Button';
 
 const LEFT_MENU_WIDTH = 300;
 
@@ -39,7 +40,7 @@ const Content = styled.div`
 `;
 
 const Left = styled.div<{ isOpen: boolean }>`
-  /* background: ${({ theme }) => lighten(0.05, theme.dark1Color)}; */
+  background: ${({ theme }) => theme.dark1Color};
   width: ${LEFT_MENU_WIDTH}px;
   position: absolute;
   left: 0;
@@ -97,21 +98,37 @@ const LogoTitle = styled.div`
 `;
 
 const LogoDescription = styled.div`
-  margin-top: -2px;
+  margin-top: -4px;
   font-size: 11px;
   color: ${({ theme }) => darken(0.4, theme.text1Color)};
 `;
 
+const LeftMainActionBox = styled.div`
+  padding: 10px 20px;
+
+  div {
+    width: 100%;
+
+    i {
+      margin-right: 10px;
+      font-size: 15px;
+    }
+  }
+`;
+
 const LeftMenuBox = styled.div`
   flex: 1;
+  margin-right: 8px;
 `;
 
 const LeftUserBox = styled.div`
   height: 50px;
   background: ${({ theme }) => lighten(0.06, theme.dark1Color)};
+  border-radius: 0 10px 0 0;
+  overflow: hidden;
 `;
 
-const PostsBox = styled.div`
+const Middle = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -153,7 +170,8 @@ const Overlay = styled.div<{ leftMenuIsOpen: boolean }>`
 `;
 
 const UserDataBox = styled.div`
-  padding: 0 5px;
+  border-left: 4px solid ${({ theme }) => darken(0.1, theme.main1Color)};
+  padding: 0 10px;
   display: flex;
   cursor: pointer;
   align-items: center;
@@ -161,20 +179,35 @@ const UserDataBox = styled.div`
 `;
 
 const AvatarBox = styled.div`
-  padding-left: 14px;
+  padding: 0 5px;
+`;
+
+const UserTextBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+  font-weight: 500;
 `;
 
 const UserNameBox = styled.div`
-  display: flex;
-  padding: 0 10px;
-  align-items: center;
   font-size: 13px;
-  font-weight: 500;
-  color: ${({ theme }) => lighten(0.4, theme.main1Color)};
+  color: ${({ theme }) => darken(0.1, theme.text1Color)};
+`;
 
-  @media (max-width: 700px) {
-    display: none;
-  }
+const UserStatusBox = styled.div`
+  margin-top: -2px;
+  font-size: 11px;
+  color: ${({ theme }) => darken(0.4, theme.text1Color)};
+`;
+
+const UserActions = styled.div`
+  margin-left: auto;
+`;
+
+const UserAction = styled.div`
+  cursor: pointer;
+  padding: 0 14px;
+  color: ${({ theme }) => lighten(0.5, theme.dark1Color)};
 `;
 
 const TopLink = styled.a`
@@ -187,6 +220,7 @@ const TopLink = styled.a`
   align-items: center;
   cursor: pointer;
   text-transform: uppercase;
+  font-weight: 500;
 
   span {
     margin-left: 10px;
@@ -227,7 +261,7 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
   return (
     <Box>
       <Modal
-        minimal
+        title="Авторизация"
         visible={router.query.authModal === '1'}
         onClose={() => router.back()}
       >
@@ -264,12 +298,35 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
                       <LogoImg src="https://ravepro.ams3.digitaloceanspaces.com/logo40.svg" />
                     </LogoLink>
                     <LogoTextBox>
-                      <LogoTitle>PepegaCom</LogoTitle>
+                      <LogoTitle>TwitchRu</LogoTitle>
                       <LogoDescription>Рай для клипов с твича</LogoDescription>
                     </LogoTextBox>
                   </LogoBox>
                 </Link>
               </LeftLogo>
+              <LeftMainActionBox>
+                <Permission name="CREATE_CLIP">
+                  {({ deny }) => (
+                    <Link
+                      as={`${deny ? 'auth?continue=' : ''}/newClip`}
+                      href={{
+                        pathname: router.route,
+                        query: {
+                          ...router.query,
+                          authModal: deny ? 1 : 0,
+                          newClipModal: deny ? 0 : 1
+                        }
+                      }}
+                      passHref
+                    >
+                      <Button>
+                        <Icon type="plus-square" />
+                        <span>Предложить клип</span>
+                      </Button>
+                    </Link>
+                  )}
+                </Permission>
+              </LeftMainActionBox>
               <LeftMenuBox>
                 <Scrollbars autoHide universal>
                   <LeftMenu.Box>
@@ -368,39 +425,26 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
                   </LeftMenu.Box>
                 </Scrollbars>
               </LeftMenuBox>
-              <Permission name="CREATE_CLIP">
-                {({ deny }) => (
-                  <Link
-                    as={`${deny ? 'auth?continue=' : ''}/newClip`}
-                    href={{
-                      pathname: router.route,
-                      query: {
-                        ...router.query,
-                        authModal: deny ? 1 : 0,
-                        newClipModal: deny ? 0 : 1
-                      }
-                    }}
-                    passHref
-                  >
-                    <TopLink>
-                      <Icon type="plus-circle" />
-                      <span>Предложить клип</span>
-                    </TopLink>
-                  </Link>
-                )}
-              </Permission>
               <LeftUserBox>
                 <Permission>
                   <UserProvider>
                     {({ user }) => (
-                      <Menu user={user}>
-                        <UserDataBox>
-                          <AvatarBox>
-                            <Avatar avatar={user.avatar} />
-                          </AvatarBox>
+                      <UserDataBox>
+                        <AvatarBox>
+                          <Avatar avatar={user.avatar} />
+                        </AvatarBox>
+                        <UserTextBox>
                           <UserNameBox>{user.name}</UserNameBox>
-                        </UserDataBox>
-                      </Menu>
+                          <UserStatusBox>В сети</UserStatusBox>
+                        </UserTextBox>
+                        <UserActions>
+                          <Menu user={user}>
+                            <UserAction>
+                              <Icon type="more-vert" />
+                            </UserAction>
+                          </Menu>
+                        </UserActions>
+                      </UserDataBox>
                     )}
                   </UserProvider>
                 </Permission>
@@ -421,7 +465,7 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
                 </Permission>
               </LeftUserBox>
             </Left>
-            <PostsBox id="layoutContent">
+            <Middle id="layoutContent">
               {fixedTopContent}
               <Scrollbars
                 renderView={props => <div {...props} id="mainScroll" />}
@@ -431,7 +475,7 @@ const MainLayout: FC<IProps> = ({ children, fixedTopContent, streams }) => {
                 {streams && <Streams />}
                 {children}
               </Scrollbars>
-            </PostsBox>
+            </Middle>
           </ContentInsideBox>
           <Overlay
             leftMenuIsOpen={leftMenuIsOpen}

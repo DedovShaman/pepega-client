@@ -67,14 +67,10 @@ const Box = styled('div')<{
   min-width: 240px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   margin: auto;
-  padding: ${({ minimal }) => (minimal ? '0' : '20px')};
+  padding: 10px;
   z-index: 3500;
   display: flex;
   position: relative;
-
-  @media (max-width: 700px) {
-    padding: 0;
-  }
 `;
 
 const ModalB = styled.div`
@@ -83,10 +79,6 @@ const ModalB = styled.div`
   border-radius: 4px;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  @media (max-width: 700px) {
-    border-radius: 0;
-  }
 `;
 
 const Header = styled('div')<{
@@ -94,7 +86,7 @@ const Header = styled('div')<{
 }>`
   display: ${({ minimal }) => (minimal ? 'none' : 'flex')};
   align-items: center;
-  height: 50px;
+  height: 46px;
   background: ${({ theme }) => darken(0.1, theme.main1Color)};
   border-radius: 4px 4px 0 0;
 

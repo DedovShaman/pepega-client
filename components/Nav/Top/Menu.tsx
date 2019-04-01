@@ -17,9 +17,9 @@ const UserMenu = styled.div`
   background: ${({ theme }) => theme.main1Color};
   border-radius: 3px;
   overflow: hidden;
-  margin: 5px;
   width: 150px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  margin: 0 0 12px -117px;
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); */
 `;
 
 const UserMenuItem = styled.a`

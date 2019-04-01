@@ -21,10 +21,7 @@ export default class MyDocument extends Document<IProps> {
       <html>
         <Head>
           <style dangerouslySetInnerHTML={{ __html: GlobalStyle }} />
-          <meta
-            name="description"
-            content="Топ Моменты с Twitch | Топ Моменты Твича | Топ Клипы Твич Twitchru | Топ Твича, Клипы со Стрима и Моменты с Твича"
-          />
+          <meta name="description" content="Рай для клипов с твича" />
           {this.props.styleTags}
         </Head>
         <body>
